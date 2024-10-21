@@ -26,6 +26,11 @@ function save_options() {
     var selProto = document.getElementById('selProtocol').value;
     var selTemp = document.getElementById('selTemplate').value;
     var unselTemp = document.getElementById('unselTemplate').value;
+
+    var apiKey = document.getElementById('apiKey').value;
+    var modelName = document.getElementById('modelName').value;
+    var prompt = document.getElementById('prompt').value;
+
     var NewStyleP = document.getElementById('useNewStyle').checked;
     var debugP = document.getElementById('debug').checked;
     var overlayP = document.getElementById('overlay').checked;
@@ -35,13 +40,16 @@ function save_options() {
         selectedTemplate: selTemp,
         unselectedTemplate: unselTemp,
         useNewStyleLinks: NewStyleP,
+        apiKey: apiKey,
+        modelName: modelName,
+        prompt: prompt,
         debug: debugP,
         overlay: overlayP
-    }, function() {
+    }, function () {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');
         status.textContent = 'Options saved.';
-        setTimeout(function() {
+        setTimeout(function () {
             status.textContent = '';
         }, 750);
     });
@@ -55,14 +63,22 @@ function restore_options() {
         selectedProtocol: "roam-ref",
         selectedTemplate: 'p',
         unselectedTemplate: 'L',
+        apiKey: '',
+        modelName: '',
+        prompt: '',
         useNewStyleLinks: true,
         debug: false,
         overlay: true
-    }, function(options) {
+    }, function (options) {
         document.getElementById('selProtocol').value = options.selectedProtocol;
         document.getElementById('unselTemplate').value = options.unselectedTemplate;
         document.getElementById('selTemplate').value = options.selectedTemplate;
         document.getElementById('useNewStyle').checked = options.useNewStyleLinks;
+
+        document.getElementById('apiKey').checked = options.apiKey;
+        document.getElementById('modelName').checked = options.modelName;
+        document.getElementById('prompt').checked = options.prompt;
+
         document.getElementById('debug').checked = options.debug;
         document.getElementById('overlay').checked = options.overlay;
     });
@@ -70,3 +86,4 @@ function restore_options() {
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click',
                                                  save_options);
+
