@@ -1,54 +1,48 @@
-const summarizeBtn = document.getElementById("summarizeBtn");
 const spinner = document.getElementById("spinner");
 const summaryContainer = document.getElementById("summaryContainer");
+
 const summaryContent = document.getElementById("summaryContent");
+const summaryURL = document.getElementById("summaryURL");
+const summaryTitle = document.getElementById("summaryTitle");
 
-summarizeBtn.addEventListener("click", () => {
-  spinner.style.display = "inline-block";
-  summarizeBtn.disabled = true;
 
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { action: "summarize" });
-  });
-});
 
-// Save API key and show main content
-document.getElementById("saveApiKey").addEventListener("click", () => {
-  const apiKey = document.getElementById("apiKey").value;
-  if (apiKey) {
-    chrome.storage.sync.set({ apiKey }, () => {
-      showMainContent();
+
+
+const saveOrgBtn = document.getElementById("saveSummaryOrg");
+const saveRoamBtn = document.getElementById("saveSummaryRoam");
+
+saveOrgBtn.addEventListener("click", () => {
+    saveOrgBtn.disabled = true;
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "summarize" });
     });
-  }
 });
 
-// Show main content and hide API key input
-function showMainContent() {
-  document.getElementById("apiKeyInput").style.display = "none";
-  document.getElementById("mainContent").style.display = "block";
-}
+saveRoamBtn.addEventListener("click", () => {
+    saveRoamBtn.disabled = true;
 
-// Load the saved API key and show main content if API key exists
-document.addEventListener("DOMContentLoaded", () => {
-  chrome.storage.sync.get("apiKey", (data) => {
-    if (data.apiKey) {
-      showMainContent();
-    }
-  });
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "summarize" });
+    });
 });
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "apiRequestCompleted") {
-    spinner.style.display = "none";
-    if (request.success) {
-      summarizeBtn.disabled = false;
-      summaryContent.textContent = request.summary;
-      summaryContainer.style.display = "block";
-      setTimeout(() => {
-        summaryContainer.style.opacity = "1";
-      }, 100);
-    } else {
-      summarizeBtn.disabled = false;
+    if (request.action === "apiRequestCompleted") {
+        spinner.style.display = "none";
+        if (request.success) {
+
+            summaryContent.textContent = request.summary;
+            summaryURL.textContent = request.url;
+            summaryTitle.textContent = request.title;
+
+            summaryContainer.style.display = "block";
+            setTimeout(() => {
+                summaryContainer.style.opacity = "1";
+            }, 100);
+        } else {
+        }
     }
-  }
 });

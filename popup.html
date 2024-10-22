@@ -1,39 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-
-    <div id="apiKeyInput">
-      <h1>Enter your OpenAI API Key</h1>
-      <input type="text" id="apiKey" placeholder="API Key" />
-      <button id="saveApiKey">Save</button>
-    </div>
-
-    <div id="modelNameInput">
-      <h1>Enter the OpenAI model name</h1>
-      <input type="text" id="modelName" placeholder="Model Name" />
-      <button id="saveModelName">Save</button>
-    </div>
-
-    <div id="mainContent" style="display: none">
-      <div id="buttonContainer">
-        <button id="summarizeBtn">Summarize Page</button>
-        <div id="spinnerContainer">
-          <div id="spinner" class="spinner" style="display: none"></div>
+    <head>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div id="mainContent" style="display: none">
+            <div id="buttonContainer">
+                <button id="summarizeBtn">Summarize Page</button>
+                <div id="spinnerContainer">
+                    <div id="spinner" class="spinner" style="display: none"></div>
+                </div>
+            </div>
+            <div id="summaryContainer" class="summary-container" style="display: none">
+                <h3>Page Summary</h3>
+                <div id="summaryURL" class="summary-url"></div>
+                <div id="summaryTitle" class="summary-title"></div>
+                <div id="summaryContent" class="summary-content"></div>
+                <button id="saveSummaryOrg">Save Org</button>
+                <button id="saveSummaryRoam">Save Roam</button>
+            </div>
         </div>
-      </div>
-      <div
-        id="summaryContainer"
-        class="summary-container"
-        style="display: none"
-      >
-        <h3>Page Summary</h3>
-        <div id="summaryContent" class="summary-content"></div>
-        <button id="saveSummary">Save</button>
-      </div>
-    </div>
-    <script src="popup.js"></script>
-  </body>
+        <script src="popup.js"></script>
+    </body>
 </html>

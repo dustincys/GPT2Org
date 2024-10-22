@@ -162,6 +162,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 action: "apiRequestCompleted",
                                 success: true,
                                 summary: summary,
+                                url: request.url,
+                                title: request.title,
+
                             });
                         } else {
                             console.error("Error: No summary data received from the API");
@@ -187,6 +190,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // add org or org-roam protocol ///////////////////////////////////////////////
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "org") {
+
     }
 });
 
