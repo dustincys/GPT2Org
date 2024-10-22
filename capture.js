@@ -21,162 +21,162 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 (function () {
-  class Capture {
-    createCaptureURI() {
-      var protocol = "capture";
-      var protocol = this.protocol;
+    class Capture {
+        createCaptureURI() {
+            var protocol = "capture";
+            var protocol = this.protocol;
 
-      if (protocol == "roam-ref")
-        return (
-          "org-protocol://" +
-          protocol +
-          "?template=" +
-          "r" +
-          "&ref=" +
-          this.encoded_url +
-          "&title=" +
-          this.escaped_title +
-          "&body=" +
-          encodeURIComponent(this.selection_markdown)
-          //this.selection_html
-        );
+            if (protocol == "roam-ref")
+                return (
+                    "org-protocol://" +
+                    protocol +
+                    "?template=" +
+                    "r" +
+                    "&ref=" +
+                    this.encoded_url +
+                    "&title=" +
+                    this.escaped_title +
+                    "&body=" +
+                    encodeURIComponent(this.selection_markdown)
+                    //this.selection_html
+                );
 
-      var template =
-        this.selection_text != ""
-          ? this.selectedTemplate
-          : this.unselectedTemplate;
-      if (this.useNewStyleLinks)
-        return (
-          "org-protocol://" +
-          protocol +
-          "?template=" +
-          template +
-          "&url=" +
-          this.encoded_url +
-          "&title=" +
-          this.escaped_title +
-          "&body=" +
-          this.selection_text
-        );
-      else
-        return (
-          "org-protocol://" +
-          protocol +
-          ":/" +
-          template +
-          "/" +
-          this.encoded_url +
-          "/" +
-          this.escaped_title +
-          "/" +
-          this.selection_text
+            var template =
+                this.selection_text != ""
+                    ? this.selectedTemplate
+                    : this.unselectedTemplate;
+            if (this.useNewStyleLinks)
+                return (
+                    "org-protocol://" +
+                    protocol +
+                    "?template=" +
+                    template +
+                    "&url=" +
+                    this.encoded_url +
+                    "&title=" +
+                    this.escaped_title +
+                    "&body=" +
+                    this.selection_text
+                );
+            else
+                return (
+                    "org-protocol://" +
+                    protocol +
+                    ":/" +
+                    template +
+                    "/" +
+                    this.encoded_url +
+                    "/" +
+                    this.escaped_title +
+                    "/" +
+                    this.selection_text
+                );
+        }
+
+        constructor() {
+            this.window = window;
+            this.document = document;
+            this.location = location;
+            var docFragment = window.getSelection().getRangeAt(0).cloneContents();
+            var tempDiv = document.createElement("div");
+            tempDiv.appendChild(docFragment);
+
+            this.selection_html = tempDiv.innerHTML;
+
+            var turndownService = new TurndownService({ codeBlockStyle: 'fenced' });
+            var gfm = turndownPluginGfm.gfm
+            turndownService.use(gfm)
+
+            var tmpclean = getSelectionAsCleanHtml();
+            this.selection_markdown = turndownService.turndown(
+                tmpclean
+            );
+            console.log(this.selection_markdown);
+
+            this.selection_text = escapeIt(window.getSelection().toString());
+            this.encoded_url = encodeURIComponent(location.href);
+            this.escaped_title = escapeIt(document.title);
+        }
+
+        capture() {
+            var uri = this.createCaptureURI();
+
+            if (this.debug) {
+                logURI(uri);
+            }
+
+            location.href = uri;
+
+            if (this.overlay) {
+                toggleOverlay();
+            }
+        }
+
+        captureIt(options) {
+            if (chrome.runtime.lastError) {
+                alert(
+                    "Could not capture url. Error loading options: " +
+                    chrome.runtime.lastError.message
+                );
+                return;
+            }
+
+            if (this.selection_text) {
+                this.template = this.selectedTemplate;
+                this.protocol = this.selectedProtocol;
+            } else {
+                this.template = this.unselectedTemplate;
+                this.protocol = this.unselectedProtocol;
+            }
+
+            for (var k in options) this[k] = options[k];
+            this.protocol = options.selectedProtocol;
+            this.capture();
+        }
+    }
+
+    function replace_all(str, find, replace) {
+        return str.replace(new RegExp(find, "g"), replace);
+    }
+
+    function escapeIt(text) {
+        return replace_all(
+            replace_all(
+                replace_all(encodeURIComponent(text), "[(]", escape("(")),
+                "[)]",
+                escape(")")
+            ),
+            "[']",
+            escape("'")
         );
     }
 
-    constructor() {
-      this.window = window;
-      this.document = document;
-      this.location = location;
-      var docFragment = window.getSelection().getRangeAt(0).cloneContents();
-      var tempDiv = document.createElement("div");
-      tempDiv.appendChild(docFragment);
-
-      this.selection_html = tempDiv.innerHTML;
-
-      var turndownService = new TurndownService({codeBlockStyle : 'fenced'});
-      var gfm = turndownPluginGfm.gfm
-      turndownService.use(gfm)
-
-      var tmpclean=getSelectionAsCleanHtml();
-      this.selection_markdown = turndownService.turndown(
-        tmpclean
-      );
-      console.log(this.selection_markdown);
-
-      this.selection_text = escapeIt(window.getSelection().toString());
-      this.encoded_url = encodeURIComponent(location.href);
-      this.escaped_title = escapeIt(document.title);
-    }
-
-    capture() {
-      var uri = this.createCaptureURI();
-
-      if (this.debug) {
-        logURI(uri);
-      }
-
-      location.href = uri;
-
-      if (this.overlay) {
-        toggleOverlay();
-      }
-    }
-
-    captureIt(options) {
-      if (chrome.runtime.lastError) {
-        alert(
-          "Could not capture url. Error loading options: " +
-            chrome.runtime.lastError.message
+    function logURI(uri) {
+        window.console.log(
+            "Capturing the following URI with new org-protocol: ",
+            uri
         );
-        return;
-      }
-
-      if (this.selection_text) {
-        this.template = this.selectedTemplate;
-        this.protocol = this.selectedProtocol;
-      } else {
-        this.template = this.unselectedTemplate;
-        this.protocol = this.unselectedProtocol;
-      }
-
-      for (var k in options) this[k] = options[k];
-      this.protocol = options.selectedProtocol;
-      this.capture();
+        return uri;
     }
-  }
 
-  function replace_all(str, find, replace) {
-    return str.replace(new RegExp(find, "g"), replace);
-  }
+    function toggleOverlay() {
+        var outer_id = "org-capture-extension-overlay";
+        var inner_id = "org-capture-extension-text";
+        if (!document.getElementById(outer_id)) {
+            var outer_div = document.createElement("div");
+            outer_div.id = outer_id;
 
-  function escapeIt(text) {
-    return replace_all(
-      replace_all(
-        replace_all(encodeURIComponent(text), "[(]", escape("(")),
-        "[)]",
-        escape(")")
-      ),
-      "[']",
-      escape("'")
-    );
-  }
+            var inner_div = document.createElement("div");
+            inner_div.id = inner_id;
+            inner_div.innerHTML = "Captured";
 
-  function logURI(uri) {
-    window.console.log(
-      "Capturing the following URI with new org-protocol: ",
-      uri
-    );
-    return uri;
-  }
+            outer_div.appendChild(inner_div);
+            document.body.appendChild(outer_div);
 
-  function toggleOverlay() {
-    var outer_id = "org-capture-extension-overlay";
-    var inner_id = "org-capture-extension-text";
-    if (!document.getElementById(outer_id)) {
-      var outer_div = document.createElement("div");
-      outer_div.id = outer_id;
-
-      var inner_div = document.createElement("div");
-      inner_div.id = inner_id;
-      inner_div.innerHTML = "Captured";
-
-      outer_div.appendChild(inner_div);
-      document.body.appendChild(outer_div);
-
-      var css = document.createElement("style");
-      css.type = "text/css";
-      // noinspection JSAnnotator
-      css.innerHTML = `#org-capture-extension-overlay {
+            var css = document.createElement("style");
+            css.type = "text/css";
+            // noinspection JSAnnotator
+            css.innerHTML = `#org-capture-extension-overlay {
         position: fixed; /* Sit on top of the page content */
         display: none; /* Hidden by default */
         width: 100%; /* Full width (cover the whole page) */
@@ -199,115 +199,136 @@
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
 }`;
-      document.body.appendChild(css);
-    }
-
-    function on() {
-      document.getElementById(outer_id).style.display = "block";
-    }
-
-    function off() {
-      document.getElementById(outer_id).style.display = "none";
-    }
-
-    on();
-    setTimeout(off, 200);
-  }
-  function imgToCanvasToDataUrl(imgEl) {
-    return new Promise((resolve) => {
-      let img = new Image();
-      img.setAttribute("crossorigin", "anonymous"); // TODO: What is this?
-      img.onload = function () {
-        let canvas = document.createElement("canvas");
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        canvas.drawImage(img, 0, 0);
-        imgEl.setAttribute("src", canvas.toDataURL("image/png"));
-        resolve(imgEl.src);
-      };
-    });
-  }
-
-  function getSelectionAsCleanHtml() {
-    let selection = document.getSelection();
-    if (!selection) {
-      console.error("[To Developer] document.getSelection() is null???");
-      return "ERROR";
-    }
-    if (selection.rangeCount === 0) {
-      let frames = document.getElementsByTagName("iframe");
-      if (frames) {
-        for (let i = 0; i < frames.length; i++) {
-          const frame = frames[i];
-          const contentDocument = frame.contentDocument;
-          if (!contentDocument) {
-            continue;
-          }
-          const tmpSel = contentDocument.getSelection();
-          if (!tmpSel) {
-            continue;
-          }
-          if (tmpSel.rangeCount > 0) {
-            selection = tmpSel;
-            break; // NOTE: Right?
-          }
+            document.body.appendChild(css);
         }
-      }
+
+        function on() {
+            document.getElementById(outer_id).style.display = "block";
+        }
+
+        function off() {
+            document.getElementById(outer_id).style.display = "none";
+        }
+
+        on();
+        setTimeout(off, 200);
+    }
+    function imgToCanvasToDataUrl(imgEl) {
+        return new Promise((resolve) => {
+            let img = new Image();
+            img.setAttribute("crossorigin", "anonymous"); // TODO: What is this?
+            img.onload = function () {
+                let canvas = document.createElement("canvas");
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                canvas.drawImage(img, 0, 0);
+                imgEl.setAttribute("src", canvas.toDataURL("image/png"));
+                resolve(imgEl.src);
+            };
+        });
     }
 
-    if (selection.rangeCount === 0) {
-      console.log(
-        "[INFO] document.getSelection().rangeCount is 0. Return empty string."
-      );
-      return "";
+    function getSelectionAsCleanHtml() {
+        let selection = document.getSelection();
+        if (!selection) {
+            console.error("[To Developer] document.getSelection() is null???");
+            return "ERROR";
+        }
+        if (selection.rangeCount === 0) {
+            let frames = document.getElementsByTagName("iframe");
+            if (frames) {
+                for (let i = 0; i < frames.length; i++) {
+                    const frame = frames[i];
+                    const contentDocument = frame.contentDocument;
+                    if (!contentDocument) {
+                        continue;
+                    }
+                    const tmpSel = contentDocument.getSelection();
+                    if (!tmpSel) {
+                        continue;
+                    }
+                    if (tmpSel.rangeCount > 0) {
+                        selection = tmpSel;
+                        break; // NOTE: Right?
+                    }
+                }
+            }
+        }
+
+        if (selection.rangeCount === 0) {
+            console.log(
+                "[INFO] document.getSelection().rangeCount is 0. Return empty string."
+            );
+            return "";
+        }
+
+        const container = document.createElement("div");
+
+        for (let i = 0; i < selection.rangeCount; ++i) {
+            container.appendChild(selection.getRangeAt(i).cloneContents());
+        }
+
+        for (let a of container.getElementsByTagName("a")) {
+            const href = a.getAttribute("href");
+            if (!href) {
+                continue;
+            }
+            if (href.startsWith("http")) {
+                continue;
+            }
+            // const fixedHref = url.resolve(document.URL, href);
+            // a.setAttribute("href", fixedHref);
+            // url.resolve 已废弃
+            const fixedHref = new URL(href, document.URL);
+            a.setAttribute("href", fixedHref);
+        }
+
+        for (let img of container.getElementsByTagName("img")) {
+            const src = img.getAttribute("src");
+            if (!src) {
+                continue;
+            }
+            if (src.startsWith("http")) {
+                continue;
+            }
+            if (src.startsWith("data:")) {
+                continue;
+            }
+            // const fixedSrc = url.resolve(document.URL, src);
+            // img.setAttribute("src", fixedSrc);
+            const fixedSrc = new URL("src", document.URL);
+            img.setAttribute("src", fixedSrc);
+        }
+
+        const cleanHTML = container.innerHTML;
+        return cleanHTML;
     }
 
-    const container = document.createElement("div");
 
-    for (let i = 0; i < selection.rangeCount; ++i) {
-      container.appendChild(selection.getRangeAt(i).cloneContents());
-    }
+    // Step1 create capture area to clean main text
+    // Step2 gpt summarize
+    // Step3 show the summarized text
+    // Step4 return the summarize text or not
 
-    for (let a of container.getElementsByTagName("a")) {
-      const href = a.getAttribute("href");
-      if (!href) {
-        continue;
-      }
-      if (href.startsWith("http")) {
-        continue;
-      }
-      // const fixedHref = url.resolve(document.URL, href);
-      // a.setAttribute("href", fixedHref);
-      // url.resolve 已废弃
-      const fixedHref = new URL(href,document.URL);
-      a.setAttribute("href", fixedHref);
-    }
-
-    for (let img of container.getElementsByTagName("img")) {
-      const src = img.getAttribute("src");
-      if (!src) {
-        continue;
-      }
-      if (src.startsWith("http")) {
-        continue;
-      }
-      if (src.startsWith("data:")) {
-        continue;
-      }
-      // const fixedSrc = url.resolve(document.URL, src);
-      // img.setAttribute("src", fixedSrc);
-      const fixedSrc = new URL("src",document.URL);
-      img.setAttribute("src", fixedSrc);
-    }
-
-    const cleanHTML = container.innerHTML;
-    return cleanHTML;
-  }
-
-  //this.selection_markdown = turndownService.turndown('<h1>Hello world!</h1>');
-  var capture = new Capture();
-  var f = function (options) {
-    capture.captureIt(options);
-  };
-  chrome.storage.sync.get(null, f);
+    //this.selection_markdown = turndownService.turndown('<h1>Hello world!</h1>');
+    var capture = new Capture();
+    var f = function (options) {
+        capture.captureIt(options);
+    };
+    chrome.storage.sync.get(null, f);
 })();
+
+
+///////////////////////////////////////////////////////////////////////////////
+//                            add summarize funcs                            //
+///////////////////////////////////////////////////////////////////////////////
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "summarize") {
+        const pageContent = document.body.innerText;
+        chrome.runtime.sendMessage({
+            action: "summarizeContent",
+            content: pageContent,
+        });
+    }
+});
