@@ -22,21 +22,11 @@
 
 function onExecuted(result) {
     console.log(`We executed capture.js`);
-
 }
 
-function onExecutedTurndownPlugin(result) {
-    console.log(`We executed turndown.js`);
-    var turndown_plugin_exec = browser.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
-    turndown_plugin_exec.then(onExecutedCapture, onError);
-}
 
 function onExecutedCapture(result) {
-    console.log(`We executed turndown-plugin-gfm.js`);
-    // Add readability.js library
-    // Add gpt listener
-    // Add org-roam capture listener
-    // then execute capture
+    console.log(`We executed Readability.js`);
     var capture_exec = browser.tabs.executeScript({ file: "capture.js" });
     capture_exec.then(onExecuted, onError);
 }
@@ -45,8 +35,8 @@ function onError(error) {
 }
 
 function runScripts() {
-    var turndown_exec = browser.tabs.executeScript({ file: "lib/turndown.js" });
-    turndown_exec.then(onExecutedTurndownPlugin, onError);
+    var readability_exec = browser.tabs.executeScript({ file: "lib/Readability.js" });
+    readability_exec.then(onExecutedCapture, onError);
 }
 
 chrome.runtime.onInstalled.addListener(function (details) {
@@ -99,7 +89,7 @@ browser.menus.create(
     },
     () => {
         if (browser.runtime.lastError)
-            console.log(`Error: ${browser.runtime.lastError}`)
+            console.log(`Error: ${browser.runtime.lastError}`);
     }
 )
 
