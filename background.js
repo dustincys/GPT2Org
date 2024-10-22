@@ -190,11 +190,50 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // add org or org-roam protocol ///////////////////////////////////////////////
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "org") {
-
+        chrome.storage.sync.get(null, (data) => {
+            if (data.useNewStyleLinks)
+                return (
+                    "org-protocol://" +
+                    data.protocol +
+                    "?template=" +
+                    data.template +
+                    "&url=" +
+                    request.url +
+                    "&title=" +
+                    request.title +
+                    "&body=" +
+                    request.content
+                );
+            else
+                return (
+                    "org-protocol://" +
+                    data.protocol +
+                    ":/" +
+                    data.template +
+                    "/" +
+                    data.url +
+                    "/" +
+                    data.title +
+                    "/" +
+                    data.content
+                );
+        });
     }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "org-roam") {
+        return (
+            "org-protocol://" +
+            data.protocol +
+            "?template=" +
+            "r" +
+            "&ref=" +
+            request.url +
+            "&title=" +
+            request.title +
+            "&body=" +
+            request.content
+        );
     }
 });

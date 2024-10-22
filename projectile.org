@@ -59,14 +59,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 Not sure...
 
-** WORKING Setup the background listener    :org-roam-capture-extension:
+** DONE Setup the background listener    :org-roam-capture-extension:
+CLOSED: [2024-10-22 Tue 15:06]
 :LOGBOOK:
+- State "DONE"       from "HOLD"       [2024-10-22 Tue 15:06]
+- State "HOLD"       from "WORKING"    [2024-10-22 Tue 13:47]
 - State "WORKING"    from "TODO"       [2024-10-22 Tue 13:27]
-CLOCK: [2024-10-22 Tue 13:27]
+CLOCK: [2024-10-22 Tue 13:27]--[2024-10-22 Tue 13:45] =>  0:18
 :END:
 [2024-10-22 Tue 09:56] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/capture.js::47][capture.js]]
 
-** TODO Setup the popup.js and popup.html    :org-roam-capture-extension:
+** DONE Setup the popup.js and popup.html    :org-roam-capture-extension:
+CLOSED: [2024-10-22 Tue 13:45]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2024-10-22 Tue 13:45]
+:END:
 [2024-10-22 Tue 09:57] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/capture.js::47][capture.js]]
 
 ** DONE Check the openai api    :org-roam-capture-extension:
