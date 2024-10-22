@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "Org roam Capture",
+  "name": "GPT summarize and Org roam Capture",
   "version": "0.3.6",
   "description": "A helper for capturing things via org-protocol in emacs: First, set up: http://orgmode.org/worg/org-contrib/org-protocol.html",
-  "homepage_url": "https://github.com/xiliuya/org-roam-capture-extension",
+  "homepage_url": "https://github.com/dustincys/org-roam-capture-extension",
   "icons": {
         "256": "img/icon.png"
     },
@@ -14,7 +14,8 @@
   },
 
   "web_accessible_resources": ["img/*.png"],
-  "permissions": ["activeTab", "menus", "storage"],
+    "permissions": ["activeTab", "tabs", "menus", "storage", "scripting"],
+
 
   "options_ui": {
     "page": "options.html"
@@ -23,22 +24,13 @@
   "browser_action": {
     "browser_style": true,
     "default_icon": "img/icon.png",
-    "default_title": "Capture selection (Ctrl+Shift+L)"
+    "default_popup": "popup.html",
+    "default_title": "Summary and Capture"
   },
 
   "commands": {
     "_execute_browser_action": {
       "description": "Capture current page with org-capture",
-      "suggested_key": {
-        "default": "Ctrl+Shift+L",
-        "mac": "Command+Shift+L"
-      }
     }
   },
-  "browser_specific_settings": {
-  "gecko": {
-    "id": "xiliuya@aliyun.com"
-    }
-  }
-
 }
