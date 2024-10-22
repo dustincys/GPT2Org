@@ -186,3 +186,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
     }
 });
+
+
+// add org or org-roam protocol ///////////////////////////////////////////////
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "org") {
+    }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "org-roam") {
+    }
+});
