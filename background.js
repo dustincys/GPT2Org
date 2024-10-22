@@ -112,33 +112,20 @@ browser.menus.onClicked.addListener((info, tab) => {
 
 
 
-
-
-
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //                            Add summarize funcs                            //
 ///////////////////////////////////////////////////////////////////////////////
 
-chrome.action.onClicked.addListener((tab) => {
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ["content.js"],
-    });
-});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
-        chrome.storage.sync.get("apiKey", (data) => {
+        chrome.storage.sync.get(null, (data) => {
             if (data.apiKey) {
                 const apiKey = data.apiKey;
-
                 const apiUrl = "https://api.openai.com/v1/completions";
-
-                const prompt = `Summarize the following text:\n\n${request.content}\n\nSummary:`;
+                // const prompt = `Summarize the following text:\n\n${request.content}\n\nSummary:`;
+                const prompt = data.prompt;
+                const model = data.modelName;
 
                 fetch(apiUrl, {
                     method: "POST",
@@ -147,8 +134,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         Authorization: `Bearer ${apiKey}`,
                     },
                     body: JSON.stringify({
-                        model: "gpt-4o-mini",
-                        prompt: prompt,
+                        model: model,
+                        message: [
+                            {
+                                role: "system",
+                                content: prompt,
+                            },
+                            {
+                                role: "user",
+                                content: request.content,
+                            }
+                        ]
                     }),
                 })
                     .then((response) => {
