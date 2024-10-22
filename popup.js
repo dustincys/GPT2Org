@@ -5,26 +5,28 @@ const summaryContent = document.getElementById("summaryContent");
 const summaryURL = document.getElementById("summaryURL");
 const summaryTitle = document.getElementById("summaryTitle");
 
-
-
-
-
 const saveOrgBtn = document.getElementById("saveSummaryOrg");
 const saveRoamBtn = document.getElementById("saveSummaryRoam");
 
 saveOrgBtn.addEventListener("click", () => {
     saveOrgBtn.disabled = true;
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: "summarize" });
+    chrome.runtime.sendMessage({
+        action: "saveOrg",
+        content: summaryContent.textContent,
+        url: summaryURL.textContent,
+        title: summaryTitle.textContent,
     });
 });
 
 saveRoamBtn.addEventListener("click", () => {
     saveRoamBtn.disabled = true;
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: "summarize" });
+    chrome.runtime.sendMessage({
+        action: "saveRoam",
+        content: summaryContent.textContent,
+        url: summaryURL.textContent,
+        title: summaryTitle.textContent,
     });
 });
 
