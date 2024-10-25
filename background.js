@@ -40,101 +40,65 @@ function runScripts() {
 }
 
 chrome.runtime.onInstalled.addListener(function (details) {
-    if (details.reason == "install")
-        chrome.storage.sync.set({
-            selectedProtocol: "roam-ref",
-            selectedTemplate: "p",
-            unselectedTemplate: "L",
-            useNewStyleLinks: true,
-            debug: false,
-            overlay: true,
-        });
-    else if (
-        details.reason == "update" &&
-        details.previousVersion.startsWith("0.1")
-    )
-        chrome.storage.sync.set({
-            selectedProtocol: "roam-ref",
-            selectedTemplate: "p",
-            unselectedTemplate: "L",
-            useNewStyleLinks: false,
-            debug: false,
-            overlay: true,
-        });
+    chrome.storage.sync.set({
+        "ronProtocol": "capture",
+        "ronTemplate": "orp",
+        "rnnProtocol": "roam-ref",
+        "rnnTemplate": "p",
+        "clockedProtocol": "capture",
+        "clockedTemplate": "orc",
+        "journalProtocol": "capture",
+        "journalTemplate": "orj",
+        "apiKey": '',
+        "modelName": 'gpt-4o-mini',
+        "prompt": 'I will provide you a web page content. You should ignore the noise text in it, and summarize in less than 10 bullets in Chinese language.',
+        "useNewStyleLinks": true,
+        "debug": false,
+    });
 });
 
-
-///////////////////////////////////////////////////////////////////////////////
-//                             onClicked Listener                            //
-///////////////////////////////////////////////////////////////////////////////
-chrome.browserAction.onClicked.addListener(function (tab) {
-    // chrome.tabs.executeScript({ file: "lib/turndown.js" });
-    // chrome.tabs.executeScript({ file: "lib/turndown-plugin-gfm.js" });
-    // chrome.tabs.executeScript({ file: "capture.js" });
-    // fix some time turndown.js not load.
-    runScripts();
-});
-
-
-browser.menus.create(
-    {
-        id: "org-capture-selection",
-        title: "Capture Selection",
-        contexts: ["selection"],
-        documentUrlPatterns: ["<all_urls>"],  // "https://*" not works...
-        icons: {
-            "16": "img/icon16.png",
-            "32": "img/icon32.png"
-        }
-    },
-    () => {
-        if (browser.runtime.lastError)
-            console.log(`Error: ${browser.runtime.lastError}`);
-    }
-)
-
-browser.menus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === "org-capture-selection") {
-        // console.log(info.selectionText);
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "capture") {
+        alert('Icon clicked!');
+        console.log('Icon clicked!');
         runScripts();
     }
 });
 
-
-
-///////////////////////////////////////////////////////////////////////////////
 //                            Add summarize funcs                            //
-///////////////////////////////////////////////////////////////////////////////
-
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
+        console.log("request");
+        console.log(request);
         chrome.storage.sync.get(null, (data) => {
             if (data.apiKey) {
+                console.log("data");
+                console.log(data);
                 const apiKey = data.apiKey;
-                const apiUrl = "https://api.openai.com/v1/completions";
+                const apiUrl = "https://api.openai.com/v1/chat/completions";
                 // const prompt = `Summarize the following text:\n\n${request.content}\n\nSummary:`;
                 const prompt = data.prompt;
                 const model = data.modelName;
 
                 fetch(apiUrl, {
-                    method: "POST",
-                    headers: {
+                    "method": "POST",
+                    "headers": {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${apiKey}`,
+                        "Authorization": `Bearer ${apiKey}`,
                     },
                     body: JSON.stringify({
-                        model: model,
-                        message: [
+                        "model": model,
+                        "messages": [
                             {
-                                role: "system",
-                                content: prompt,
+                                "role": "system",
+                                "content": prompt,
                             },
                             {
-                                role: "user",
-                                content: request.content,
-                            }
-                        ]
+                                "role": "user",
+                                "content": request.content,
+                            },
+                        ],
                     }),
                 })
                     .then((response) => {
@@ -147,28 +111,28 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     })
                     .then((data) => {
                         if (data.choices && data.choices.length > 0) {
-                            const summary = data.choices[0].text.trim();
+                            const summary = data.choices[0].message.content.trim();
+                            console.log(summary);
                             chrome.runtime.sendMessage({
-                                action: "apiRequestCompleted",
-                                success: true,
-                                summary: summary,
-                                url: request.url,
-                                title: request.title,
-
+                                "action": "apiRequestCompleted",
+                                "success": true,
+                                "summary": summary,
+                                "url": request.url,
+                                "title": request.title,
                             });
                         } else {
                             console.error("Error: No summary data received from the API");
                             chrome.runtime.sendMessage({
-                                action: "apiRequestCompleted",
-                                success: false,
+                                "action": "apiRequestCompleted",
+                                "success": false,
                             });
                         }
                     })
                     .catch((error) => {
                         console.error("Error:", error);
                         chrome.runtime.sendMessage({
-                            action: "apiRequestCompleted",
-                            success: false,
+                            "action": "apiRequestCompleted",
+                            "success": false,
                         });
                     });
             }
@@ -179,51 +143,111 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // add org or org-roam protocol ///////////////////////////////////////////////
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "org") {
+    if (request.action === "saveOrg") {
         chrome.storage.sync.get(null, (data) => {
-            if (data.useNewStyleLinks)
-                return (
-                    "org-protocol://" +
-                    data.protocol +
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.ronProtocol +
                     "?template=" +
-                    data.template +
+                    data.ronTemplate +
                     "&url=" +
                     request.url +
                     "&title=" +
                     request.title +
                     "&body=" +
-                    request.content
-                );
-            else
-                return (
-                    "org-protocol://" +
-                    data.protocol +
+                    request.content;
+            } else {
+                uri = "org-protocol://" +
+                    data.ronProtocol +
                     ":/" +
-                    data.template +
+                    data.ronTemplate +
                     "/" +
-                    data.url +
+                    request.url +
                     "/" +
-                    data.title +
+                    request.title +
                     "/" +
-                    data.content
-                );
+                    request.content;
+            }
+            console.log(uri); // Log the URI for debugging
+            location.href = uri;
         });
     }
-});
+    if (request.action === "saveRoam") {
+        chrome.storage.sync.get(null, (data) => {
+            let uri = "org-protocol://" +
+                data.rnnProtocol +
+                "?template=" +
+                data.rnnTemplate +
+                "&ref=" +
+                request.url +
+                "&title=" +
+                request.title +
+                "&body=" +
+                request.content;
+            console.log(uri); // Log the URI for debugging
+            location.href = uri;
+        });
+    }
+    if (request.action === "saveClocked") {
+        chrome.storage.sync.get(null, (data) => {
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.clockedProtocol +
+                    "?template=" +
+                    data.clockedTemplate +
+                    "&url=" +
+                    request.url +
+                    "&title=" +
+                    request.title +
+                    "&body=" +
+                    request.content;
+            } else {
+                uri = "org-protocol://" +
+                    data.clockedProtocol +
+                    ":/" +
+                    data.clockedTemplate +
+                    "/" +
+                    request.url +
+                    "/" +
+                    request.title +
+                    "/" +
+                    request.content;
+            }
+            console.log(uri); // Log the URI for debugging
+            location.href = uri;
+        });
+    }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "org-roam") {
-        return (
-            "org-protocol://" +
-            data.protocol +
-            "?template=" +
-            "r" +
-            "&ref=" +
-            request.url +
-            "&title=" +
-            request.title +
-            "&body=" +
-            request.content
-        );
+    if (request.action === "saveJournal") {
+        chrome.storage.sync.get(null, (data) => {
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.journalProtocol +
+                    "?template=" +
+                    data.journalTemplate +
+                    "&url=" +
+                    request.url +
+                    "&title=" +
+                    request.title +
+                    "&body=" +
+                    request.content;
+            } else {
+                uri = "org-protocol://" +
+                    data.journalProtocol +
+                    ":/" +
+                    data.journalTemplate +
+                    "/" +
+                    request.url +
+                    "/" +
+                    request.title +
+                    "/" +
+                    request.content;
+            }
+            console.log(uri); // Log the URI for debugging
+            location.href = uri;
+        });
     }
 });
