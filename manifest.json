@@ -3,7 +3,7 @@
     "name": "GPT2Org",
     "version": "0.0.1",
     "description": "To summarize the page and capture it to org",
-    "homepage_url": "https://github.com/dustincys/org-roam-capture-extension",
+    "homepage_url": "https://github.com/dustincys/org-roam-capture-extension/tree/summarize",
     "icons": {
         "256": "img/icon.png"
     },
@@ -11,8 +11,7 @@
         "persistent": true,
         "scripts": [
             "background.js"
-        ], // or use "background": { "service_worker": "background.js" } for MV3
-        "type": "module" // Only for MV3
+        ],
     },
     "web_accessible_resources": [
         "img/*.png"
@@ -20,7 +19,6 @@
     "permissions": [
         "activeTab",
         "tabs",
-        "menus",
         "storage",
         "scripting"
     ],
@@ -35,11 +33,7 @@
     },
     "commands": {
         "_execute_browser_action": {
-            "description": "Capture current page with org-capture and org-roam",
-            "suggested_key": {
-                "default": "Ctrl+Shift+L",
-                "mac": "Command+Shift+L"
-            }
+            "description": "Capture the GPT summary with org-capture and org-roam",
         }
     },
     "browser_specific_settings": {
