@@ -1,36 +1,50 @@
 {
-  "manifest_version": 2,
-  "name": "GPT summarize and Org roam Capture",
-  "version": "0.3.6",
-  "description": "A helper for capturing things via org-protocol in emacs: First, set up: http://orgmode.org/worg/org-contrib/org-protocol.html",
-  "homepage_url": "https://github.com/dustincys/org-roam-capture-extension",
-  "icons": {
+    "manifest_version": 2,
+    "name": "GPT2Org",
+    "version": "0.0.1",
+    "description": "To summarize the page and capture it to org",
+    "homepage_url": "https://github.com/dustincys/org-roam-capture-extension",
+    "icons": {
         "256": "img/icon.png"
     },
-
-  "background": {
-    "persistent": false,
-    "scripts": ["background.js"]
-  },
-
-  "web_accessible_resources": ["img/*.png"],
-    "permissions": ["activeTab", "tabs", "menus", "storage", "scripting"],
-
-
-  "options_ui": {
-    "page": "options.html"
-  },
-
-  "browser_action": {
-    "browser_style": true,
-    "default_icon": "img/icon.png",
-    "default_popup": "popup.html",
-    "default_title": "Summary and Capture"
-  },
-
-  "commands": {
-    "_execute_browser_action": {
-      "description": "Capture current page with org-capture",
+    "background": {
+        "persistent": true,
+        "scripts": [
+            "background.js"
+        ], // or use "background": { "service_worker": "background.js" } for MV3
+        "type": "module" // Only for MV3
+    },
+    "web_accessible_resources": [
+        "img/*.png"
+    ],
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "menus",
+        "storage",
+        "scripting"
+    ],
+    "options_ui": {
+        "page": "options.html"
+    },
+    "browser_action": {
+        "browser_style": true,
+        "default_icon": "img/icon.png",
+        "default_popup": "popup.html",
+        "default_title": "Summary and Capture"
+    },
+    "commands": {
+        "_execute_browser_action": {
+            "description": "Capture current page with org-capture and org-roam",
+            "suggested_key": {
+                "default": "Ctrl+Shift+L",
+                "mac": "Command+Shift+L"
+            }
+        }
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "yanshuoc@gmail.com"
+        }
     }
-  },
 }
