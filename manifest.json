@@ -11,7 +11,7 @@
         "persistent": true,
         "scripts": [
             "background.js"
-        ],
+        ]
     },
     "web_accessible_resources": [
         "img/*.png"
@@ -33,7 +33,7 @@
     },
     "commands": {
         "_execute_browser_action": {
-            "description": "Capture the GPT summary with org-capture and org-roam",
+            "description": "Capture the GPT summary with org-capture and org-roam"
         }
     },
     "browser_specific_settings": {
