@@ -23,9 +23,18 @@
 
 // Saves options to chrome.storage.sync.
 function save_options() {
-    var selProto = document.getElementById('selProtocol').value;
-    var selTemp = document.getElementById('selTemplate').value;
-    var unselTemp = document.getElementById('unselTemplate').value;
+
+    var ronProtocol = document.getElementById('ronProtocol').value;
+    var ronTemplate = document.getElementById('ronTemplate').value;
+
+    var rnnProtocol = document.getElementById('rnnProtocol').value;
+    var rnnTemplate = document.getElementById('rnnTemplate').value;
+
+    var clockedProtocol = document.getElementById('clockedProtocol').value;
+    var clockedTemplate = document.getElementById('clockedTemplate').value;
+
+    var journalProtocol = document.getElementById('journalProtocol').value;
+    var journalTemplate = document.getElementById('journalTemplate').value;
 
     var apiKey = document.getElementById('apiKey').value;
     var modelName = document.getElementById('modelName').value;
@@ -33,18 +42,21 @@ function save_options() {
 
     var NewStyleP = document.getElementById('useNewStyle').checked;
     var debugP = document.getElementById('debug').checked;
-    var overlayP = document.getElementById('overlay').checked;
 
     chrome.storage.sync.set({
-        selectedProtocol: selProto,
-        selectedTemplate: selTemp,
-        unselectedTemplate: unselTemp,
-        useNewStyleLinks: NewStyleP,
-        apiKey: apiKey,
-        modelName: modelName,
-        prompt: prompt,
-        debug: debugP,
-        overlay: overlayP
+        "ronProtocol": ronProtocol,
+        "ronTemplate": ronTemplate,
+        "rnnProtocol": rnnProtocol,
+        "rnnTemplate": rnnTemplate,
+        "clockedProtocol": clockedProtocol,
+        "clockedTemplate": clockedTemplate,
+        "journalProtocol": journalProtocol,
+        "journalTemplate": journalTemplate,
+        "apiKey": apiKey,
+        "modelName": modelName,
+        "prompt": prompt,
+        "useNewStyleLinks": NewStyleP,
+        "debug": debugP,
     }, function () {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');
@@ -59,31 +71,22 @@ function save_options() {
 // stored in chrome.storage.
 function restore_options() {
     // Use default value color = 'red' and likesColor = true.
-    chrome.storage.sync.get({
-        selectedProtocol: "roam-ref",
-        selectedTemplate: 'p',
-        unselectedTemplate: 'L',
-        apiKey: '',
-        modelName: '',
-        prompt: '',
-        useNewStyleLinks: true,
-        debug: false,
-        overlay: true
-    }, function (options) {
-        document.getElementById('selProtocol').value = options.selectedProtocol;
-        document.getElementById('unselTemplate').value = options.unselectedTemplate;
-        document.getElementById('selTemplate').value = options.selectedTemplate;
+    chrome.storage.sync.get(null, function (options) {
+        document.getElementById('ronProtocol').value = options.ronProtocol;
+        document.getElementById('ronTemplate').value = options.ronTemplate;
+        document.getElementById('rnnProtocol').value = options.rnnProtocol;
+        document.getElementById('rnnTemplate').value = options.rnnTemplate;
+        document.getElementById('clockedProtocol').value = options.clockedProtocol;
+        document.getElementById('clockedTemplate').value = options.clockedTemplate;
+        document.getElementById('journalProtocol').value = options.journalProtocol;
+        document.getElementById('journalTemplate').value = options.journalTemplate;
+        document.getElementById('apiKey').value = options.apiKey;
+        document.getElementById('modelName').value = options.modelName;
+        document.getElementById('prompt').value = options.prompt;
         document.getElementById('useNewStyle').checked = options.useNewStyleLinks;
-
-        document.getElementById('apiKey').checked = options.apiKey;
-        document.getElementById('modelName').checked = options.modelName;
-        document.getElementById('prompt').checked = options.prompt;
-
         document.getElementById('debug').checked = options.debug;
-        document.getElementById('overlay').checked = options.overlay;
     });
 }
 document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click',
-                                                 save_options);
+document.getElementById('save').addEventListener('click', save_options);
 
