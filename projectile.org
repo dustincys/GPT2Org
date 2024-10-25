@@ -1,6 +1,10 @@
 * Plan
 
-** TODO Further check the menu    :org-roam-capture-extension:
+** DONE Further check the menu    :org-roam-capture-extension:
+CLOSED: [2024-10-23 Wed 16:04]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2024-10-23 Wed 16:04]
+:END:
 [2024-10-21 Mon 09:59] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/background.js::85][background.js]]
 #+BEGIN_SRC js2
 browser.menus.create(
@@ -98,4 +102,163 @@ CLOCK: [2024-10-22 Tue 10:47]--[2024-10-22 Tue 10:57] =>  0:10
   })
 #+END_SRC
 
+** DONE [#A] See how to setup the popup page    :org-roam-capture-extension:
+CLOSED: [2024-10-24 Thu 22:08]
+:LOGBOOK:
+- State "DONE"       from "HOLD"       [2024-10-24 Thu 22:08]
+- State "HOLD"       from "WORKING"    [2024-10-24 Thu 09:27]
+- State "WORKING"    from "HOLD"       [2024-10-24 Thu 09:20]
+CLOCK: [2024-10-24 Thu 09:20]--[2024-10-24 Thu 09:27] =>  0:07
+- State "HOLD"       from "WORKING"    [2024-10-23 Wed 21:49]
+- State "WORKING"    from "TODO"       [2024-10-23 Wed 21:46]
+CLOCK: [2024-10-23 Wed 21:46]--[2024-10-23 Wed 21:49] =>  0:03
+:END:
+[2024-10-23 Wed 16:06] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/manifest.json::35][manifest.json]]
+#+BEGIN_SRC json
+    \"browser_action\": {
+        \"browser_style\": true,
+        \"default_icon\": \"img/icon.png\",
+        // \"default_popup\": \"popup.html\",
+        \"default_title\": \"Summary and Capture\"
+    },
+#+END_SRC
+
+like https://github.com/mdn/webextensions-examples/blob/main/beastify/popup/choose_beast.js
+load the background.js and capture the content
+
+1. The JavaScript file popup.js is required to communicate with the
+   background.js file by sending messages directly. Failure to establish this
+   direct communication may result in the disappearance of the popup page within
+   the web application.
+
+2. When a popup page is specified in the manifest.json file, the click event on
+   the icon is handled or intercepted by the popup.html file. This functionality
+   allows for the display of a popup window when the icon associated with the
+   extension is clicked, providing a user interface for additional interactions
+   or information.
+
+** DONE [#A] Setup the org and org-roam buttons    :org-roam-capture-extension:
+CLOSED: [2024-10-25 Fri 10:12]
+:LOGBOOK:
+- State "DONE"       from "WORKING"    [2024-10-25 Fri 10:12]
+- State "WORKING"    from "TODO"       [2024-10-25 Fri 09:59]
+CLOCK: [2024-10-25 Fri 09:59]--[2024-10-25 Fri 10:12] =>  0:13
+:END:
+[2024-10-24 Thu 22:08] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/styles.css::77][styles.css]]
+
+** CANCELLED [#C] Setup streaming curl    :org-roam-capture-extension: :CANCELLED:
+CLOSED: [2024-10-25 Fri 09:59]
+[2024-10-24 Thu 22:26] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/styles.css::77][styles.css]]
+
+https://community.openai.com/t/api-assistant-streaming-curl/731219
+#+begin_src sh
+curl -N https://api.openai.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '{
+    "model": "gpt-4",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant."
+      },
+      {
+        "role": "user",
+        "content": "Hello!"
+      }
+    ],
+    "stream": true
+  }'
+#+end_src
+
+** DONE Replace readability, as it modify the original page    :org-roam-capture-extension:
+CLOSED: [2024-10-25 Fri 10:41]
+:LOGBOOK:
+- State "DONE"       from "WORKING"    [2024-10-25 Fri 10:41]
+- State "WORKING"    from "TODO"       [2024-10-25 Fri 10:13]
+CLOCK: [2024-10-25 Fri 10:13]--[2024-10-25 Fri 10:41] =>  0:28
+:END:
+[2024-10-25 Fri 10:13] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/background.js::39][background.js]]
+#+BEGIN_SRC js2
+    var readability_exec = browser.tabs.executeScript({ file: \"lib/Readability.js\" });
+#+END_SRC
+
+Better to remove it, it is not stable.
+
+** DONE Fix the protocol format    :org-roam-capture-extension:
+CLOSED: [2024-10-25 Fri 15:03]
+:LOGBOOK:
+- State "DONE"       from "HOLD"       [2024-10-25 Fri 15:03]
+- State "HOLD"       from "WORKING"    [2024-10-25 Fri 13:46]
+- State "WORKING"    from "TODO"       [2024-10-25 Fri 12:57]
+CLOCK: [2024-10-25 Fri 12:57]--[2024-10-25 Fri 13:46] =>  0:49
+:END:
+[2024-10-25 Fri 10:44] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/background.js::181][background.js]]
+#+BEGIN_SRC js2
+  // add org or org-roam protocol ///////////////////////////////////////////////
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request.action === \"saveOrg\") {
+          chrome.storage.sync.get(null, (data) => {
+              let uri;
+
+              if (data.useNewStyleLinks) {
+                  uri = \"org-protocol://\" +
+                  data.protocol +
+                      \"?template=\" +
+                      data.template +
+                      \"&url=\" +
+                      request.url +
+                      \"&title=\" +
+                      request.title +
+                      \"&body=\" +
+                      request.content;
+              } else {
+                  uri = \"org-protocol://\" +
+                  data.protocol +
+                      \":/\" +
+                      data.template +
+                      \"/\" +
+                      request.url +
+                      \"/\" +
+                      request.title +
+                      \"/\" +
+                      request.content;
+              }
+
+              console.log(uri); // Log the URI for debugging
+              location.href = uri;
+          });
+      }
+  });
+
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request.action === \"saveRoam\") {
+          let uri = \"org-protocol://\" +
+          data.protocol +
+              \"?template=\" +
+              \"r\" +
+              \"&ref=\" +
+              request.url +
+              \"&title=\" +
+              request.title +
+              \"&body=\" +
+              request.content;
+          console.log(uri); // Log the URI for debugging
+          location.href = uri;
+      }
+  });
+#+END_SRC
+
 * Note
+
+** Here popup intercepts click listener    :org-roam-capture-extension:
+[2024-10-23 Wed 16:04] In file: [[file:///Users/ychu2/github/org-roam-capture-extension/manifest.json::35][manifest.json]]
+#+BEGIN_SRC json
+    \"browser_action\": {
+        \"browser_style\": true,
+        \"default_icon\": \"img/icon.png\",
+        // \"default_popup\": \"popup.html\",
+        \"default_title\": \"Summary and Capture\"
+    },
+#+END_SRC
+
