@@ -3,6 +3,25 @@
 
 [[https://raw.githubusercontent.com/dustincys/GPT2Org/refs/heads/main/img/icon.png]]
 
+
+This extension is compatible with Google Chrome and Firefox and introduces a
+"Summary" icon to the user interface. When clicked, it will extract the main
+textual content from the entire web page using the standalone version of the
+readability library, which is also utilized in the [Firefox Reader
+View](https://support.mozilla.org/kb/firefox-reader-view-clutter-free-web-pages)
+View feature. The extracted text is then processed by
+[OpenAI](https://openai.com/)'s Language Model (LLM) to generate a concise
+summary. Users have the option to customize the type of operation performed on
+the extracted text by providing a specific prompt. The summarized content can be
+saved via org-protocol, with detailed instructions available on the
+[Org-Mode](https://orgmode.org/) website for configuring this functionality. The
+extension includes four pre-configured capture buttons that correspond to
+different org-protocol templates. These templates enable users to save the
+summarized content as a new [org-roam](https://www.orgroam.com/) node, append it
+to an existing [org-roam](https://www.orgroam.com/) node, track it as a
+[clocking](https://orgmode.org/manual/Clocking-commands.html) item, or add it to
+their daily journal.
+
 Utilizing the OpenAI API, one can efficiently extract a succinct summary from a
 webpage by providing the necessary prompt and API key. This API facilitates the
 generation of a condensed overview of the webpage's content. Subsequently, the
@@ -13,3 +32,83 @@ capabilities of the org-mode, individuals can enhance the process of summarizing
 information sourced from the web and seamlessly integrate it into their personal
 knowledge management systems.
 
+
+* Getting started
+** Set your org or org-roam templates
+Templates:
+#+begin_src elisp
+  (setq org-capture-templates
+        '(("orp" "Org roam capture content" plain (file (lambda () (org-roam-node-file (org-roam-node-read))))
+           "* [[%:link][%(my-org/transform-square-brackets-to-round-ones \"%:description\")]]\n - Source: %u\n#+BEGIN_QUOTE\n%(my-org/format-i-string)\n#+END_QUOTE")
+          ("orc" "Org roam capture content to clocked" plain (clock)
+           "* [[%:link][%(my-org/transform-square-brackets-to-round-ones \"%:description\")]]\n - Source: %u\n#+BEGIN_QUOTE\n%(my-org/format-i-string)\n#+END_QUOTE")
+          ("orj" "Org roam capture content to journal" entry (file+olp+datetree "~/Dropbox/org-roam/20241007093145-diary.org")
+           "* [[%:link][%(my-org/transform-square-brackets-to-round-ones \"%:description\")]]\n - Source: %u\n#+BEGIN_QUOTE\n%(my-org/format-i-string)\n#+END_QUOTE")))
+  (setq org-roam-capture-ref-templates
+        '(("p" "Protocol" plain
+           "* [[${ref}][%(my-org/transform-square-brackets-to-round-ones \"${title}\")]]\n - Source: %u\n#+BEGIN_QUOTE\n%(my-org/format-i-string)\n#+END_QUOTE"
+           :target (file+head "${slug}.org" "#+title: ${title}")
+           :unnarrowed t)))
+#+end_src
+
+Functions used in above templates
+#+begin_src elisp
+  (defun my-org/transform-square-brackets-to-round-ones(string-to-transform)
+    "Transforms [ into ( and ] into ), other chars left unchanged."
+    (concat
+     (mapcar #'(lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform)))
+
+  (defun my-org/replace-in-string (what with in)
+    (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
+
+  (defun my-org/format-i-string ()
+    (let ((v-i
+           (my-org/replace-in-string
+            "\"" "\\\""
+            (org-link-unescape
+             (plist-get org-store-link-plist :initial)))))
+      (if (not (or (string-empty-p v-i)    ; Check if quote-str is an empty string
+                   (string-match-p "^\\s*$" v-i)))  ; Check if quote-str is only whitespace
+          (if (yes-or-no-p "Format the quote?")
+              (shell-command-to-string (format "~/miniconda3/bin/python3 ~/bin/pfmt.py --string \"%s\"" v-i))
+            v-i)
+        "")))
+#+end_src
+
+The format python script
+#+begin_src python
+  #!/opt/homebrew/bin/python3
+
+  import argparse
+  import cjkwrap
+
+  from itertools import groupby
+
+  def paragraph(lines) :
+      for group_separator, line_iteration in groupby(lines.splitlines(True),
+                                                     key = str.isspace) :
+          if not group_separator :
+              yield ''.join(line_iteration)
+
+
+  def main():
+      parser = argparse.ArgumentParser(description = 'format string vector')
+      parser.add_argument('--string', dest='inString', help='input string')
+      args = parser.parse_args()
+
+      inString = args.inString.strip(" \n")
+      reString = ""
+
+      for p in paragraph(inString):
+          p = p.strip(" \n")
+          reString = "{0}\n\n{1}".format(reString, cjkwrap.fill(p, 81))
+
+      reString = reString.strip("\n")
+      print(reString)
+
+  if __name__ == '__main__':
+      main()
+#+end_src
+
+** Seting org-protocol
+See [[file:README.old.md][README_old.md]] .
