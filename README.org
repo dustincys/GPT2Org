@@ -1,7 +1,7 @@
 #+author: Yanshuo Chu
 #+title: GPT2Org
 
-[[file:images/https://raw.githubusercontent.com/dustincys/GPT2Org/refs/heads/main/img/icon.png]]
+[[https://raw.githubusercontent.com/dustincys/GPT2Org/refs/heads/main/img/icon.png]]
 
 Utilizing the OpenAI API, one can efficiently extract a succinct summary from a
 webpage by providing the necessary prompt and API key. This API facilitates the
@@ -12,3 +12,4 @@ leveraging artificial intelligence technology and the organizational
 capabilities of the org-mode, individuals can enhance the process of summarizing
 information sourced from the web and seamlessly integrate it into their personal
 knowledge management systems.
+
