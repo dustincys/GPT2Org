@@ -112,3 +112,14 @@ The format python script
 
 ** Seting org-protocol
 See [[file:README.old.md][README_old.md]] .
+
+
+* Acknowedgement
+
+This project referred, forked, or used some parts of the codes from the other projects:
+
+| Project URL                | Usage                                  | Licenses of Used Parts |
+|----------------------------+----------------------------------------+------------------------|
+| [[https://github.com/sprig/org-capture-extension][org-capture-extension]]      | Copy some javascript code              | MIT                    |
+| [[https://github.com/xiliuya/org-roam-capture-extension][org-roam-capture-extension]] | As the initial framework               | MIT                    |
+| [[https://github.com/mozilla/readability?tab=readme-ov-file][Readability.js]]             | To extract the main text from web page | Apache License 2.0     |
