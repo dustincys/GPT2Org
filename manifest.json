@@ -20,7 +20,8 @@
         "activeTab",
         "tabs",
         "storage",
-        "scripting"
+        "scripting",
+        "clipboardWrite"
     ],
     "options_ui": {
         "page": "options.html"
@@ -38,7 +39,7 @@
     },
     "browser_specific_settings": {
         "gecko": {
-            "id": "GPT2Org@yanshuo.site"
+            "id": "gpt2orgv2@yanshuo.site"
         }
     }
 }

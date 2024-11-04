@@ -51,7 +51,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
         "journalTemplate": "orj",
         "apiKey": '',
         "modelName": 'gpt-4o-mini',
-        "prompt": 'I will provide you a web page content. You should ignore the noise text in it, and summarize in less than 10 bullets in Chinese language.',
+        "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese. If it is not a tumor biology or medicine related paper, please just summarze it in no more than 10 bullets in simple Chinese in total.',
         "useNewStyleLinks": true,
         "debug": false,
     });
@@ -113,6 +113,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         if (data.choices && data.choices.length > 0) {
                             const summary = data.choices[0].message.content.trim();
                             // console.log(summary);
+                            navigator.clipboard.writeText(`Title: ${request.title}\nURL: ${request.url}\nSummary:\n${summary}`);
                             chrome.runtime.sendMessage({
                                 "action": "apiRequestCompleted",
                                 "success": true,
