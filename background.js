@@ -112,8 +112,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     .then((data) => {
                         if (data.choices && data.choices.length > 0) {
                             const summary = data.choices[0].message.content.trim();
-                            // console.log(summary);
-                            navigator.clipboard.writeText(`Title: ${request.title}\nURL: ${request.url}\nSummary:\n${summary}`);
+                            const decodedTitle = decodeURIComponent(request.title);
+                            const decodedURL = decodeURIComponent(request.url);
+
+                            navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
                             chrome.runtime.sendMessage({
                                 "action": "apiRequestCompleted",
                                 "success": true,
