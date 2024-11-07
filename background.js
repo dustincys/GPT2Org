@@ -1,21 +1,16 @@
-function onExecuted(result) {
-    // console.log(`We executed capture.js`);
-}
 
-function onExecutedCapture(result) {
-    // console.log(`We executed Readability.js`);
-    var capture_exec = chrome.tabs.executeScript({ file: "capture.js" });
-    capture_exec.then(onExecuted, onError);
-}
-
-function onError(error) {
-    // console.log(`Error: ${error}`);
-}
-
-function runScripts() {
-    var readability_exec = chrome.tabs.executeScript({ file: "lib/Readability.js" });
-    readability_exec.then(onExecutedCapture, onError);
-}
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "capture") {
+        chrome.scripting.executeScript({
+            target: { tabId: request.tabId },
+            files: ['lib/Readability.js', 'capture.js']
+        }).then(() => {
+            console.log('Readability.js capture.js executed successfully');
+        }).catch((error) => {
+            console.error('Error executing Readability.js:', error);
+        });
+    }
+});
 
 chrome.runtime.onInstalled.addListener(function (details) {
     chrome.storage.sync.set({
