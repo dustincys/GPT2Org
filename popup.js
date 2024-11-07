@@ -59,8 +59,6 @@ saveRoamBtn.addEventListener("click", () => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "apiRequestCompleted") {
-        // console.log("received message!");
-        // console.log(request);
         spinner.style.display = "none";
         if (request.success) {
             summaryContent.textContent = request.summary;

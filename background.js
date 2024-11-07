@@ -1,37 +1,11 @@
-///////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2015-2017 Konstantin Kliakhandler				 //
-// 										 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy	 //
-// of this software and associated documentation files (the "Software"), to deal //
-// in the Software without restriction, including without limitation the rights	 //
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell	 //
-// copies of the Software, and to permit persons to whom the Software is	 //
-// furnished to do so, subject to the following conditions:			 //
-// 										 //
-// The above copyright notice and this permission notice shall be included in	 //
-// all copies or substantial portions of the Software.				 //
-// 										 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR	 //
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,	 //
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE	 //
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER	 //
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, //
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN	 //
-// THE SOFTWARE.								 //
-///////////////////////////////////////////////////////////////////////////////////
-
 function onExecuted(result) {
-    // console.log(`We executed capture.js`);
 }
 
-
 function onExecutedCapture(result) {
-    // console.log(`We executed Readability.js`);
     var capture_exec = browser.tabs.executeScript({ file: "capture.js" });
     capture_exec.then(onExecuted, onError);
 }
 function onError(error) {
-    // console.log(`Error: ${error}`);
 }
 
 function runScripts() {
@@ -59,8 +33,6 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "capture") {
-        // alert('Icon clicked!');
-        // console.log('Icon clicked!');
         runScripts();
     }
 });
@@ -78,8 +50,6 @@ async function hashString(str) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
-        // console.log("request");
-        // console.log(request);
         chrome.storage.sync.get(null, async(data) => {
             const apiKey = data.apiKey;
             const prompt = data.prompt;
@@ -90,9 +60,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
             browser.storage.local.get(hashedKey).then((result) => {
                 if (result.hasOwnProperty(hashedKey)) {
-                    // Data exists for this URL hash
-                    // console.log(`Data for URL hash ${hashedKey}:`, result[hashedKey]);
-
                     const summary = result[hashedKey];
                     const decodedTitle = decodeURIComponent(request.title);
                     const decodedURL = decodeURIComponent(request.url);
@@ -106,9 +73,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         "title": request.title,
                     });
                 } else {
-                    // No data exists for this URL hash
-                    // console.log(`No cached data found for URL hash ${hashedKey}`);
-
                     if (data.apiKey) {
                         const apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -148,9 +112,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
                                     navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
 
-                                    browser.storage.local.set({ [hashedKey]: summary }).then(() => {
-                                        // console.log('Data has been stored in cache');
-                                    }).catch((error) => {
+                                    browser.storage.local.set({ [hashedKey]: summary })
+                                    .catch((error) => {
                                         console.error('Error saving data:', error);
                                     });
 
@@ -162,7 +125,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         "title": request.title,
                                     });
                                 } else {
-                                    // console.error("Error: No summary data received from the API");
                                     chrome.runtime.sendMessage({
                                         "action": "apiRequestCompleted",
                                         "success": false,
@@ -170,7 +132,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 }
                             })
                             .catch((error) => {
-                                // console.error("Error:", error);
                                 chrome.runtime.sendMessage({
                                     "action": "apiRequestCompleted",
                                     "success": false,
@@ -212,7 +173,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
-            // console.log(uri); // Log the URI for debugging
             location.href = uri;
         });
     }
@@ -228,7 +188,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 request.title +
                 "&body=" +
                 request.content;
-            // console.log(uri); // Log the URI for debugging
             location.href = uri;
         });
     }
@@ -258,7 +217,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
-            // console.log(uri); // Log the URI for debugging
             location.href = uri;
         });
     }
@@ -289,7 +247,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
-            // console.log(uri); // Log the URI for debugging
             location.href = uri;
         });
     }
