@@ -67,78 +67,118 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 //                            Add summarize funcs                            //
 
+async function hashString(str) {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then((hashBuffer) => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+        return hashHex;
+    });
+}
+
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
         // console.log("request");
         // console.log(request);
-        chrome.storage.sync.get(null, (data) => {
-            if (data.apiKey) {
-                // console.log("data");
-                // console.log(data);
-                const apiKey = data.apiKey;
-                const apiUrl = "https://api.openai.com/v1/chat/completions";
-                // const prompt = `Summarize the following text:\n\n${request.content}\n\nSummary:`;
-                const prompt = data.prompt;
-                const model = data.modelName;
+        chrome.storage.sync.get(null, async(data) => {
+            const apiKey = data.apiKey;
+            const prompt = data.prompt;
+            const model = data.modelName;
+            const requestUrl = request.url;
 
-                fetch(apiUrl, {
-                    "method": "POST",
-                    "headers": {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${apiKey}`,
-                    },
-                    body: JSON.stringify({
-                        "model": model,
-                        "messages": [
-                            {
-                                "role": "system",
-                                "content": prompt,
-                            },
-                            {
-                                "role": "user",
-                                "content": request.content,
-                            },
-                        ],
-                    }),
-                })
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error(
-                                `API request failed with status ${response.status}`
-                            );
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        if (data.choices && data.choices.length > 0) {
-                            const summary = data.choices[0].message.content.trim();
-                            const decodedTitle = decodeURIComponent(request.title);
-                            const decodedURL = decodeURIComponent(request.url);
+            const hashedKey = await hashString(`${apiKey}${prompt}${model}${requestUrl}`);
 
-                            navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
-                            chrome.runtime.sendMessage({
-                                "action": "apiRequestCompleted",
-                                "success": true,
-                                "summary": summary,
-                                "url": request.url,
-                                "title": request.title,
-                            });
-                        } else {
-                            // console.error("Error: No summary data received from the API");
-                            chrome.runtime.sendMessage({
-                                "action": "apiRequestCompleted",
-                                "success": false,
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        // console.error("Error:", error);
-                        chrome.runtime.sendMessage({
-                            "action": "apiRequestCompleted",
-                            "success": false,
-                        });
+            browser.storage.local.get(hashedKey).then((result) => {
+                if (result.hasOwnProperty(hashedKey)) {
+                    // Data exists for this URL hash
+                    // console.log(`Data for URL hash ${hashedKey}:`, result[hashedKey]);
+
+                    const summary = result[hashedKey];
+                    const decodedTitle = decodeURIComponent(request.title);
+                    const decodedURL = decodeURIComponent(request.url);
+
+                    navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
+                    chrome.runtime.sendMessage({
+                        "action": "apiRequestCompleted",
+                        "success": true,
+                        "summary": summary,
+                        "url": request.url,
+                        "title": request.title,
                     });
-            }
+                } else {
+                    // No data exists for this URL hash
+                    // console.log(`No cached data found for URL hash ${hashedKey}`);
+
+                    if (data.apiKey) {
+                        const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+                        fetch(apiUrl, {
+                            "method": "POST",
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${apiKey}`,
+                            },
+                            body: JSON.stringify({
+                                "model": model,
+                                "messages": [
+                                    {
+                                        "role": "system",
+                                        "content": prompt,
+                                    },
+                                    {
+                                        "role": "user",
+                                        "content": request.content,
+                                    },
+                                ],
+                            }),
+                        })
+                            .then((response) => {
+                                if (!response.ok) {
+                                    throw new Error(
+                                        `API request failed with status ${response.status}`
+                                    );
+                                }
+                                return response.json();
+                            })
+                            .then((data) => {
+                                if (data.choices && data.choices.length > 0) {
+                                    const summary = data.choices[0].message.content.trim();
+                                    const decodedTitle = decodeURIComponent(request.title);
+                                    const decodedURL = decodeURIComponent(request.url);
+
+                                    navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
+
+                                    browser.storage.local.set({ [hashedKey]: summary }).then(() => {
+                                        // console.log('Data has been stored in cache');
+                                    }).catch((error) => {
+                                        console.error('Error saving data:', error);
+                                    });
+
+                                    chrome.runtime.sendMessage({
+                                        "action": "apiRequestCompleted",
+                                        "success": true,
+                                        "summary": summary,
+                                        "url": request.url,
+                                        "title": request.title,
+                                    });
+                                } else {
+                                    // console.error("Error: No summary data received from the API");
+                                    chrome.runtime.sendMessage({
+                                        "action": "apiRequestCompleted",
+                                        "success": false,
+                                    });
+                                }
+                            })
+                            .catch((error) => {
+                                // console.error("Error:", error);
+                                chrome.runtime.sendMessage({
+                                    "action": "apiRequestCompleted",
+                                    "success": false,
+                                });
+                            });
+                    }
+                }
+            });
         });
     }
 });
