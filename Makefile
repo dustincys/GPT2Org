@@ -21,6 +21,7 @@ build:
 # Package the extension into a .xpi file
 package: build
 	@echo "Packaging into GPT2Org.xpi..."
+	cd $(BUILD_DIR)
 	zip -r GPT2Org.xpi ./*
 	@echo "Packaging complete."
 
@@ -28,6 +29,7 @@ package: build
 clean:
 	@echo "Cleaning up build directory..."
 	rm -rf $(BUILD_DIR)
+	rm -f GPT2Org.xpi
 	@echo "Build directory removed."
 
 .PHONY: all build package clean
