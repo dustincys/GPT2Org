@@ -1,20 +1,36 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "GPT2Org",
     "version": "0.0.3",
     "description": "Utilizing the OpenAI API, one can efficiently extract a succinct summary from a webpage by providing the necessary prompt and API key. This API facilitates the generation of a condensed overview of the webpage's content. Subsequently, the obtained summary can be organized and stored in a structured format, such as an Org file within the Emacs environment or an Org-roam node by org protocol. By leveraging artificial intelligence technology and the organizational capabilities of the org-mode, individuals can enhance the process of summarizing information sourced from the web and seamlessly integrate it into their personal knowledge management systems.",
-    "homepage_url": "https://github.com/dustincys/GPT2Org",
+    "homepage_url": "https://github.com/dustincys/GPT2Org/tree/chrome",
     "icons": {
         "256": "img/icon.png"
     },
     "background": {
-        "scripts": [
-            "background.js"
-        ],
-        "persistent": true
+        "service_worker": "background.js"
     },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>",
+                "<all_urls>"
+            ],
+            "js": [
+                "lib/Readability.js",
+                "capture.js"
+            ]
+        }
+    ],
     "web_accessible_resources": [
-        "img/*.png"
+        {
+            "resources": [
+                "img/*.png"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
     ],
     "permissions": [
         "activeTab",
@@ -24,14 +40,9 @@
         "clipboardWrite"
     ],
     "options_page": "options.html",
-    "browser_action": {
+    "action": {
         "default_icon": "img/icon.png",
         "default_popup": "popup.html",
         "default_title": "Summary and Capture"
-    },
-    "commands": {
-        "_execute_browser_action": {
-            "description": "Capture the GPT summary with org-capture and org-roam"
-        }
     }
 }
