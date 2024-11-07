@@ -8,10 +8,10 @@
         "256": "img/icon.png"
     },
     "background": {
-        "persistent": true,
         "scripts": [
             "background.js"
-        ]
+        ],
+        "persistent": true
     },
     "web_accessible_resources": [
         "img/*.png"
@@ -23,11 +23,8 @@
         "scripting",
         "clipboardWrite"
     ],
-    "options_ui": {
-        "page": "options.html"
-    },
+    "options_page": "options.html",
     "browser_action": {
-        "browser_style": true,
         "default_icon": "img/icon.png",
         "default_popup": "popup.html",
         "default_title": "Summary and Capture"
@@ -35,11 +32,6 @@
     "commands": {
         "_execute_browser_action": {
             "description": "Capture the GPT summary with org-capture and org-roam"
-        }
-    },
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "gpt2orgv2@yanshuo.site"
         }
     }
 }
