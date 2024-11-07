@@ -59,8 +59,6 @@ saveRoamBtn.addEventListener("click", () => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "apiRequestCompleted") {
-        // console.log("received message!");
-        // console.log(request);
         spinner.style.display = "none";
         if (request.success) {
             summaryContent.textContent = request.summary;
@@ -72,6 +70,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 summaryContainer.style.opacity = "1";
             }, 100);
 
+            const decodedTitle = decodeURIComponent(request.title);
+            const decodedURL = decodeURIComponent(request.url);
+            navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${request.summary}`);
+
             sendResponse({ status: "success", message: "Data processed successfully." });
         } else {
             sendResponse({ status: "error", message: "Failed to process data." });
@@ -80,6 +82,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 
-chrome.runtime.sendMessage({
-    action: "capture",
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.runtime.sendMessage({
+        "action": "capture",
+        "tabId": tabs[0].id,
+    });
 });
