@@ -30,13 +30,6 @@ chrome.runtime.onInstalled.addListener(function (details) {
     });
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "capture") {
-        // alert('Icon clicked!');
-        // console.log('Icon clicked!');
-        runScripts();
-    }
-});
 
 // Add summarize functions
 
@@ -50,8 +43,6 @@ async function hashString(str) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
-        // console.log("request");
-        // console.log(request);
         chrome.storage.sync.get(null, async(data) => {
             const apiKey = data.apiKey;
             const prompt = data.prompt;
@@ -62,25 +53,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
             chrome.storage.local.get(hashedKey, (result) => {
                 if (result.hasOwnProperty(hashedKey)) {
-                    // Data exists for this URL hash
-                    // console.log(`Data for URL hash ${hashedKey}:`, result[hashedKey]);
-
-                    const summary = result[hashedKey];
-                    const decodedTitle = decodeURIComponent(request.title);
-                    const decodedURL = decodeURIComponent(request.url);
-
-                    navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
                     chrome.runtime.sendMessage({
                         "action": "apiRequestCompleted",
                         "success": true,
-                        "summary": summary,
+                        "summary": result[hashedKey],
                         "url": request.url,
                         "title": request.title,
                     });
                 } else {
-                    // No data exists for this URL hash
-                    // console.log(`No cached data found for URL hash ${hashedKey}`);
-
                     if (data.apiKey) {
                         const apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -115,13 +95,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             .then((data) => {
                                 if (data.choices && data.choices.length > 0) {
                                     const summary = data.choices[0].message.content.trim();
-                                    const decodedTitle = decodeURIComponent(request.title);
-                                    const decodedURL = decodeURIComponent(request.url);
-
-                                    navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
 
                                     chrome.storage.local.set({ [hashedKey]: summary }).then(() => {
-                                        // console.log('Data has been stored in cache');
+                                        console.log('Data has been stored in cache');
                                     }).catch((error) => {
                                         console.error('Error saving data:', error);
                                     });
@@ -134,7 +110,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                         "title": request.title,
                                     });
                                 } else {
-                                    // console.error("Error: No summary data received from the API");
+                                    console.error("Error: No summary data received from the API");
                                     chrome.runtime.sendMessage({
                                         "action": "apiRequestCompleted",
                                         "success": false,
@@ -142,7 +118,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 }
                             })
                             .catch((error) => {
-                                // console.error("Error:", error);
+                                console.error("Error:", error);
                                 chrome.runtime.sendMessage({
                                     "action": "apiRequestCompleted",
                                     "success": false,
@@ -194,8 +170,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
-            // console.log(uri); // Log the URI for debugging
-            location.href = uri;
+            // location.href = uri;
+            setLocation(uri);
         });
     }
     if (request.action === "saveRoam") {
@@ -210,8 +186,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 request.title +
                 "&body=" +
                 request.content;
-            // console.log(uri); // Log the URI for debugging
-            location.href = uri;
+            setLocation(uri);
         });
     }
     if (request.action === "saveClocked") {
@@ -240,8 +215,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
-            // console.log(uri); // Log the URI for debugging
-            location.href = uri;
+            setLocation(uri);
         });
     }
 
@@ -271,8 +245,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
-            // console.log(uri); // Log the URI for debugging
-            location.href = uri;
+            setLocation(uri);
         });
     }
 });
