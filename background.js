@@ -68,13 +68,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     });
                 } else {
                     if (data.toUseDeepSeek) {
-                        const apiUrl = "https://api.deepseek.com/chat/completions";
-                        const to_use_apikey = apiKeyDS;
-                        const to_use_model = modelDS;
+                        apiUrl = "https://api.deepseek.com/chat/completions";
+                        to_use_apikey = apiKeyDS;
+                        to_use_model = modelDS;
                     } else {
-                        const apiUrl = "https://api.openai.com/v1/chat/completions";
-                        const to_use_apikey = apiKey;
-                        const to_use_model = model;
+                        apiUrl = "https://api.openai.com/v1/chat/completions";
+                        to_use_apikey = apiKey;
+                        to_use_model = model;
                     }
                     if (to_use_apikey) {
                         fetch(apiUrl, {
