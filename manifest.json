@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "GPT2Org",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Utilizing the OpenAI API, one can efficiently extract a succinct summary from a webpage by providing the necessary prompt and API key. This API facilitates the generation of a condensed overview of the webpage's content. Subsequently, the obtained summary can be organized and stored in a structured format, such as an Org file within the Emacs environment or an Org-roam node by org protocol. By leveraging artificial intelligence technology and the organizational capabilities of the org-mode, individuals can enhance the process of summarizing information sourced from the web and seamlessly integrate it into their personal knowledge management systems.",
     "homepage_url": "https://github.com/dustincys/GPT2Org",
     "icons": {

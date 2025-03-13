@@ -40,6 +40,10 @@ function save_options() {
     var modelName = document.getElementById('modelName').value;
     var prompt = document.getElementById('prompt').value;
 
+    var apiKeyDS = document.getElementById('apiKeyDS').value;
+    var modelNameDS = document.getElementById('modelNameDS').value;
+    var toUseDeepSeek = document.getElementById('toUseDeepSeek').checked;
+
     var NewStyleP = document.getElementById('useNewStyle').checked;
     var debugP = document.getElementById('debug').checked;
 
@@ -54,8 +58,11 @@ function save_options() {
         "journalTemplate": journalTemplate,
         "apiKey": apiKey,
         "modelName": modelName,
+        "apiKeyDS": apiKeyDS,
+        "modelNameDS": modelNameDS,
         "prompt": prompt,
         "useNewStyleLinks": NewStyleP,
+        "toUseDeepSeek": toUseDeepSeek,
         "debug": debugP,
     }, function () {
         // Update status to let user know options were saved.
@@ -82,8 +89,11 @@ function restore_options() {
         document.getElementById('journalTemplate').value = options.journalTemplate;
         document.getElementById('apiKey').value = options.apiKey;
         document.getElementById('modelName').value = options.modelName;
+        document.getElementById('apiKeyDS').value = options.apiKeyDS;
+        document.getElementById('modelNameDS').value = options.modelNameDS;
         document.getElementById('prompt').value = options.prompt;
         document.getElementById('useNewStyle').checked = options.useNewStyleLinks;
+        document.getElementById('toUseDeepSeek').checked = options.toUseDeepSeek;
         document.getElementById('debug').checked = options.debug;
     });
 }

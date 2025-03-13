@@ -25,8 +25,11 @@ chrome.runtime.onInstalled.addListener(function (details) {
         "journalTemplate": "orj",
         "apiKey": '',
         "modelName": 'gpt-4o-mini',
+        "apiKeyDS": '',
+        "modelNameDS": 'deepseek-chat',
         "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese. If it is not a tumor biology or medicine related paper, please just summarze it in no more than 10 bullets in simple Chinese in total.',
         "useNewStyleLinks": true,
+        "toUseDeepSeek": true,
         "debug": false,
     });
 });
@@ -52,11 +55,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
         chrome.storage.sync.get(null, async(data) => {
             const apiKey = data.apiKey;
-            const prompt = data.prompt;
             const model = data.modelName;
+            const apiKeyDS = data.apiKeyDS;
+            const modelDS = data.modelNameDS;
+            const prompt = data.prompt;
+            const toUseDeepSeek = data.toUseDeepSeek;
             const requestUrl = request.url;
 
-            const hashedKey = await hashString(`${apiKey}${prompt}${model}${requestUrl}`);
+            const hashedKey = await hashString(`${apiKey}${apiKeyDS}${prompt}${model}${modelDS}${toUseDeepSeek}${requestUrl}`);
 
             browser.storage.local.get(hashedKey).then((result) => {
                 if (result.hasOwnProperty(hashedKey)) {
@@ -73,17 +79,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         "title": request.title,
                     });
                 } else {
-                    if (data.apiKey) {
+                    if (data.toUseDeepSeek) {
+                        const apiUrl = "https://api.deepseek.com/chat/completions";
+                        const to_use_apikey = apiKeyDS;
+                        const to_use_model = modelDS;
+                    } else {
                         const apiUrl = "https://api.openai.com/v1/chat/completions";
+                        const to_use_apikey = apiKey;
+                        const to_use_model = model;
+                    }
 
+                    if (to_use_apikey) {
                         fetch(apiUrl, {
                             "method": "POST",
                             "headers": {
                                 "Content-Type": "application/json",
-                                "Authorization": `Bearer ${apiKey}`,
+                                "Authorization": `Bearer ${to_use_apikey}`,
                             },
                             body: JSON.stringify({
-                                "model": model,
+                                "model": to_use_model,
                                 "messages": [
                                     {
                                         "role": "system",
