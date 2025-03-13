@@ -12,7 +12,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-chrome.runtime.onInstalled.addListener(function (details) {
+chrome.runtime.onInstalled.addListener(function setInit(details) {
     chrome.storage.sync.set({
         "ronProtocol": "capture",
         "ronTemplate": "orp",
