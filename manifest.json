@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "GPT2Org",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Use OpenAI API to extract a summary from webpage, then save it in structured formats like Org or Org-roam in Emacs.",
     "homepage_url": "https://github.com/dustincys/GPT2Org/tree/chrome",
     "icons": {
