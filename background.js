@@ -23,6 +23,8 @@ chrome.runtime.onInstalled.addListener(function (details) {
         "clockedTemplate": "orc",
         "journalProtocol": "capture",
         "journalTemplate": "orj",
+        "elfeedProtocol": "capture",
+        "elfeedTemplate": "ore",
         "apiKey": '',
         "modelName": 'gpt-4o-mini',
         "apiKeyDS": '',
@@ -264,4 +266,35 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             location.href = uri;
         });
     }
+
+    if (request.action === "saveElfeed") {
+        chrome.storage.sync.get(null, (data) => {
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.elfeedProtocol +
+                    "?template=" +
+                    data.elfeedTemplate +
+                    "&url=" +
+                    request.url +
+                    "&title=" +
+                    request.title +
+                    "&body=" +
+                    request.content;
+            } else {
+                uri = "org-protocol://" +
+                    data.elfeedProtocol +
+                    ":/" +
+                    data.elfeedTemplate +
+                    "/" +
+                    request.url +
+                    "/" +
+                    request.title +
+                    "/" +
+                    request.content;
+            }
+            location.href = uri;
+        });
+    }
+
 });

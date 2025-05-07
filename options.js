@@ -36,6 +36,9 @@ function save_options() {
     var journalProtocol = document.getElementById('journalProtocol').value;
     var journalTemplate = document.getElementById('journalTemplate').value;
 
+    var elfeedProtocol = document.getElementById('elfeedProtocol').value;
+    var elfeedTemplate = document.getElementById('elfeedTemplate').value;
+
     var apiKey = document.getElementById('apiKey').value;
     var modelName = document.getElementById('modelName').value;
     var prompt = document.getElementById('prompt').value;
@@ -56,6 +59,8 @@ function save_options() {
         "clockedTemplate": clockedTemplate,
         "journalProtocol": journalProtocol,
         "journalTemplate": journalTemplate,
+        "elfeedProtocol": elfeedProtocol,
+        "elfeedTemplate": elfeedTemplate,
         "apiKey": apiKey,
         "modelName": modelName,
         "apiKeyDS": apiKeyDS,
@@ -87,6 +92,8 @@ function restore_options() {
         document.getElementById('clockedTemplate').value = options.clockedTemplate;
         document.getElementById('journalProtocol').value = options.journalProtocol;
         document.getElementById('journalTemplate').value = options.journalTemplate;
+        document.getElementById('elfeedProtocol').value = options.elfeedProtocol;
+        document.getElementById('elfeedTemplate').value = options.elfeedTemplate;
         document.getElementById('apiKey').value = options.apiKey;
         document.getElementById('modelName').value = options.modelName;
         document.getElementById('apiKeyDS').value = options.apiKeyDS;

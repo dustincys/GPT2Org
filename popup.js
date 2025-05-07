@@ -9,7 +9,19 @@ const saveOrgBtn = document.getElementById("saveSummaryOrg");
 const saveRoamBtn = document.getElementById("saveSummaryRoam");
 const saveClockedBtn = document.getElementById("saveSummaryClocked");
 const saveJournalBtn = document.getElementById("saveSummaryJournal");
+const saveElfeedBtn = document.getElementById("saveSummaryCurrentElfeed");
 
+
+saveElfeedBtn.addEventListener("click", () => {
+    saveElfeedBtn.disabled = true;
+
+    chrome.runtime.sendMessage({
+        "action": "saveElfeed",
+        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "url": summaryURL.textContent,
+        "title": summaryTitle.textContent,
+    });
+});
 
 saveJournalBtn.addEventListener("click", () => {
     saveJournalBtn.disabled = true;
