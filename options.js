@@ -36,16 +36,22 @@ function save_options() {
     var journalProtocol = document.getElementById('journalProtocol').value;
     var journalTemplate = document.getElementById('journalTemplate').value;
 
+    var elfeedProtocol = document.getElementById('elfeedProtocol').value;
+    var elfeedTemplate = document.getElementById('elfeedTemplate').value;
+
     var apiKey = document.getElementById('apiKey').value;
     var modelName = document.getElementById('modelName').value;
 
     var apiKeyDS = document.getElementById('apiKeyDS').value;
     var modelNameDS = document.getElementById('modelNameDS').value;
 
+    var apiKeyKM = document.getElementById('apiKeyKM').value;
+    var modelNameKM = document.getElementById('modelNameKM').value;
+
     var prompt = document.getElementById('prompt').value;
 
     var NewStyleP = document.getElementById('useNewStyle').checked;
-    var toUseDeepSeekP = document.getElementById('toUseDeepSeek').checked;
+    var toUseModel = document.getElementById('toUseModelForm').checked;
     var debugP = document.getElementById('debug').checked;
 
     chrome.storage.sync.set({
@@ -57,15 +63,19 @@ function save_options() {
         "clockedTemplate": clockedTemplate,
         "journalProtocol": journalProtocol,
         "journalTemplate": journalTemplate,
+        "elfeedProtocol": elfeedProtocol,
+        "elfeedTemplate": elfeedTemplate,
+
         "apiKey": apiKey,
         "modelName": modelName,
-
         "apiKeyDS": apiKeyDS,
         "modelNameDS": modelNameDS,
+        "apiKeyKM": apiKeyKM,
+        "modelNameKM": modelNameKM,
 
         "prompt": prompt,
         "useNewStyleLinks": NewStyleP,
-        "toUseDeepSeek": toUseDeepSeekP,
+        "toUseModel": toUseModel,
         "debug": debugP,
     }, function () {
         // Update status to let user know options were saved.
@@ -90,16 +100,21 @@ function restore_options() {
         document.getElementById('clockedTemplate').value = options.clockedTemplate;
         document.getElementById('journalProtocol').value = options.journalProtocol;
         document.getElementById('journalTemplate').value = options.journalTemplate;
+        document.getElementById('elfeedProtocol').value = options.elfeedProtocol;
+        document.getElementById('elfeedTemplate').value = options.elfeedTemplate;
         document.getElementById('apiKey').value = options.apiKey;
         document.getElementById('modelName').value = options.modelName;
         document.getElementById('apiKeyDS').value = options.apiKeyDS;
         document.getElementById('modelNameDS').value = options.modelNameDS;
+        document.getElementById('apiKeyKM').value = options.apiKeyKM;
+        document.getElementById('modelNameKM').value = options.modelNameKM;
         document.getElementById('prompt').value = options.prompt;
         document.getElementById('useNewStyle').checked = options.useNewStyleLinks;
-        document.getElementById('toUseDeepSeek').checked = options.toUseDeepSeek;
+        document.getElementById('toUseModel').checked = options.toUseModel;
         document.getElementById('debug').checked = options.debug;
     });
 }
+
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click', save_options);
 

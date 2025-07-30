@@ -22,13 +22,17 @@ chrome.runtime.onInstalled.addListener(function setInit(details) {
         "clockedTemplate": "orc",
         "journalProtocol": "capture",
         "journalTemplate": "orj",
+        "elfeedProtocol": "capture",
+        "elfeedTemplate": "ore",
         "apiKey": '',
         "modelName": 'gpt-4o-mini',
         "apiKeyDS": '',
         "modelNameDS": 'deepseek-chat',
+        "apiKeyKM": '',
+        "modelNameKM": 'kimi-k2-0711-preview',
         "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese. If it is not a tumor biology or medicine related paper, please just summarize it in no more than 10 bullets in simple Chinese in total.',
         "useNewStyleLinks": true,
-        "toUseDeepSeek": true,
+        "toUseModel": "DeepSeek",
         "debug": false,
     });
 });
@@ -51,11 +55,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const model = data.modelName;
             const apiKeyDS = data.apiKeyDS;
             const modelDS = data.modelNameDS;
+            const apiKeyKM = data.apiKeyKM;
+            const modelKM = data.modelNameKM;
             const prompt = data.prompt;
-            const toUseDeepSeek = data.toUseDeepSeek;
+            const toUseModel = data.toUseModel;
             const requestUrl = request.url;
 
-            const hashedKey = await hashString(`${apiKey}${apiKeyDS}${prompt}${model}${modelDS}${toUseDeepSeek}${requestUrl}`);
+            var hashStr = '';
+            if (toUseModel === "DeepSeek") {
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${requestUrl}`;
+            } else if (toUseModel === "OpenAI") {
+                hashStr = `${apiKey}${prompt}${model}${requestUrl}`;
+            } else if (toUseModel === "Kimi") {
+                hashStr = `${apiKeyKM}${prompt}${modelKM}${requestUrl}`;
+            } else {
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${requestUrl}`;
+            }
+
+            const hashedKey = await hashString(hashStr);
 
             chrome.storage.local.get(hashedKey, (result) => {
                 if (result.hasOwnProperty(hashedKey)) {
@@ -67,15 +84,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         "title": request.title,
                     });
                 } else {
-                    if (data.toUseDeepSeek) {
+                    if (data.toUseModel === "DeepSeek") {
                         apiUrl = "https://api.deepseek.com/chat/completions";
                         to_use_apikey = apiKeyDS;
                         to_use_model = modelDS;
-                    } else {
+                    } else if (data.toUseModel === "OpenAI") {
                         apiUrl = "https://api.openai.com/v1/chat/completions";
                         to_use_apikey = apiKey;
                         to_use_model = model;
+                    } else if (data.toUseModel === "Kimi") {
+                        apiUrl = "https://api.moonshot.cn/v1/chat/completions";
+                        to_use_apikey = apiKeyKM;
+                        to_use_model = modelKM;
+                    } else {
+                        apiUrl = "https://api.deepseek.com/chat/completions";
+                        to_use_apikey = apiKeyDS;
+                        to_use_model = modelDS;
                     }
+
                     if (to_use_apikey) {
                         fetch(apiUrl, {
                             "method": "POST",
@@ -259,6 +285,36 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     request.content;
             }
             setLocation(uri);
+        });
+    }
+
+    if (request.action === "saveElfeed") {
+        chrome.storage.sync.get(null, (data) => {
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.elfeedProtocol +
+                    "?template=" +
+                    data.elfeedTemplate +
+                    "&url=" +
+                    request.url +
+                    "&title=" +
+                    request.title +
+                    "&body=" +
+                    request.content;
+            } else {
+                uri = "org-protocol://" +
+                    data.elfeedProtocol +
+                    ":/" +
+                    data.elfeedTemplate +
+                    "/" +
+                    request.url +
+                    "/" +
+                    request.title +
+                    "/" +
+                    request.content;
+            }
+            location.href = uri;
         });
     }
 });
