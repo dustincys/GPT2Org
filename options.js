@@ -51,7 +51,7 @@ function save_options() {
     var prompt = document.getElementById('prompt').value;
 
     var NewStyleP = document.getElementById('useNewStyle').checked;
-    var toUseModel = document.getElementById('toUseModelForm').checked;
+    var toUseModel = document.getElementById('toUseModel').checked;
     var debugP = document.getElementById('debug').checked;
 
     chrome.storage.sync.set({
