@@ -31,5 +31,5 @@ clean:
 	rm -rf GPT2Org.xpi
 	@echo "Build directory removed."
 
-.PHONY: all build package clean
+.PHONY: all build package
 
