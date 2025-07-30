@@ -39,14 +39,18 @@ function save_options() {
     var elfeedProtocol = document.getElementById('elfeedProtocol').value;
     var elfeedTemplate = document.getElementById('elfeedTemplate').value;
 
+    var prompt = document.getElementById('prompt').value;
+
     var apiKey = document.getElementById('apiKey').value;
     var modelName = document.getElementById('modelName').value;
-    var prompt = document.getElementById('prompt').value;
 
     var apiKeyDS = document.getElementById('apiKeyDS').value;
     var modelNameDS = document.getElementById('modelNameDS').value;
 
-    var toUseModel = document.getElementById('toUseModelForm').checked;
+    var apiKeyKM = document.getElementById('apiKeyKM').value;
+    var modelNameKM = document.getElementById('modelNameKM').value;
+
+    var toUseModel = document.getElementById('toUseModel').checked;
 
     var NewStyleP = document.getElementById('useNewStyle').checked;
     var debugP = document.getElementById('debug').checked;
@@ -105,7 +109,7 @@ function restore_options() {
         document.getElementById('modelNameKM').value = options.modelNameKM;
         document.getElementById('prompt').value = options.prompt;
         document.getElementById('useNewStyle').checked = options.useNewStyleLinks;
-        document.getElementById('toUseModelForm').checked = options.toUseModel;
+        document.getElementById('toUseModel').checked = options.toUseModel;
         document.getElementById('debug').checked = options.debug;
     });
 }
