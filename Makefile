@@ -22,8 +22,7 @@ build:
 # Package the extension into a .xpi file
 package: build
 	@echo "Packaging into $(ZIP_FILE)..."
-	cd $(BUILD_DIR)
-	zip -r $(ZIP_FILE) ./*
+	cd $(BUILD_DIR) && zip -r $(ZIP_FILE) ./*
 	@echo "Packaging complete."
 
 # Clean the build directory
