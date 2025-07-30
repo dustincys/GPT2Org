@@ -30,7 +30,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
         "apiKeyDS": '',
         "modelNameDS": 'deepseek-chat',
         "apiKeyKM": '',
-        "modelNameKM": 'kimi-k2-0711-preview',
+        "modelNameKM": 'moonshot-v1-32k',
         "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese. If it is not a tumor biology or medicine related paper, please just summarze it in no more than 10 bullets in simple Chinese in total.',
         "useNewStyleLinks": true,
         "toUseModel": "DeepSeek",
@@ -68,7 +68,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const toUseModel = data.toUseModel;
             const requestUrl = request.url;
 
-            const hashedKey = await hashString(`${apiKey}${apiKeyDS}${prompt}${model}${modelDS}${toUseModel}${requestUrl}`);
+            var hashStr = '';
+            if (toUseModel === "OpenAI") {
+                hashStr = `${apiKey}${prompt}${model}${toUseModel}${requestUrl}`;
+            } else if (toUseModel === "DeepSeek") {
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}`;
+            } else if (toUseModel === "Kimi") {
+                hashStr = `${apiKeyKM}${prompt}${modelKM}${toUseModel}${requestUrl}`;
+            } else {
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}`;
+            }
+
+            const hashedKey = await hashString(hashStr);
 
             browser.storage.local.get(hashedKey).then((result) => {
                 if (result.hasOwnProperty(hashedKey)) {
