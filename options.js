@@ -45,7 +45,8 @@ function save_options() {
 
     var apiKeyDS = document.getElementById('apiKeyDS').value;
     var modelNameDS = document.getElementById('modelNameDS').value;
-    var toUseDeepSeek = document.getElementById('toUseDeepSeek').checked;
+
+    var toUseModel = document.getElementById('toUseModelForm').checked;
 
     var NewStyleP = document.getElementById('useNewStyle').checked;
     var debugP = document.getElementById('debug').checked;
@@ -65,9 +66,11 @@ function save_options() {
         "modelName": modelName,
         "apiKeyDS": apiKeyDS,
         "modelNameDS": modelNameDS,
+        "apiKeyKM": apiKeyKM,
+        "modelNameKM": modelNameKM,
         "prompt": prompt,
         "useNewStyleLinks": NewStyleP,
-        "toUseDeepSeek": toUseDeepSeek,
+        "toUseModel": toUseModel,
         "debug": debugP,
     }, function () {
         // Update status to let user know options were saved.
@@ -98,9 +101,11 @@ function restore_options() {
         document.getElementById('modelName').value = options.modelName;
         document.getElementById('apiKeyDS').value = options.apiKeyDS;
         document.getElementById('modelNameDS').value = options.modelNameDS;
+        document.getElementById('apiKeyKM').value = options.apiKeyKM;
+        document.getElementById('modelNameKM').value = options.modelNameKM;
         document.getElementById('prompt').value = options.prompt;
         document.getElementById('useNewStyle').checked = options.useNewStyleLinks;
-        document.getElementById('toUseDeepSeek').checked = options.toUseDeepSeek;
+        document.getElementById('toUseModelForm').checked = options.toUseModel;
         document.getElementById('debug').checked = options.debug;
     });
 }

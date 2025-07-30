@@ -29,9 +29,11 @@ chrome.runtime.onInstalled.addListener(function (details) {
         "modelName": 'gpt-4o-mini',
         "apiKeyDS": '',
         "modelNameDS": 'deepseek-chat',
+        "apiKeyKM": '',
+        "modelNameKM": 'kimi-k2-0711-preview',
         "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese. If it is not a tumor biology or medicine related paper, please just summarze it in no more than 10 bullets in simple Chinese in total.',
         "useNewStyleLinks": true,
-        "toUseDeepSeek": true,
+        "toUseModel": "DeepSeek",
         "debug": false,
     });
 });
@@ -60,11 +62,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const model = data.modelName;
             const apiKeyDS = data.apiKeyDS;
             const modelDS = data.modelNameDS;
+            const apiKeyKM = data.apiKeyKM;
+            const modelKM = data.modelNameKM;
             const prompt = data.prompt;
-            const toUseDeepSeek = data.toUseDeepSeek;
+            const toUseModel = data.toUseModel;
             const requestUrl = request.url;
 
-            const hashedKey = await hashString(`${apiKey}${apiKeyDS}${prompt}${model}${modelDS}${toUseDeepSeek}${requestUrl}`);
+            const hashedKey = await hashString(`${apiKey}${apiKeyDS}${prompt}${model}${modelDS}${toUseModel}${requestUrl}`);
 
             browser.storage.local.get(hashedKey).then((result) => {
                 if (result.hasOwnProperty(hashedKey)) {
@@ -81,10 +85,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         "title": request.title,
                     });
                 } else {
-                    if (data.toUseDeepSeek) {
+                    if (data.toUseModel === "DeepSeek") {
                         apiUrl = "https://api.deepseek.com/chat/completions";
                         to_use_apikey = apiKeyDS;
                         to_use_model = modelDS;
+                    } else if (data.toUseModel === "Kimi") {
+                        apiUrl = "https://api.moonshot.cn/v1/chat/completions";
+                        to_use_apikey = apiKeyKM;
+                        to_use_model = modelKM;
                     } else {
                         apiUrl = "https://api.openai.com/v1/chat/completions";
                         to_use_apikey = apiKey;
@@ -296,5 +304,4 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             location.href = uri;
         });
     }
-
 });

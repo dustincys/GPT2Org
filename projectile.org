@@ -249,6 +249,13 @@ CLOCK: [2024-10-25 Fri 12:57]--[2024-10-25 Fri 13:46] =>  0:49
   });
 #+END_SRC
 
+** WORKING Add Kimi model                                          :GPT2Org:
+:LOGBOOK:
+- State "WORKING"    from "TODO"       [2025-07-29 Tue 13:42]
+CLOCK: [2025-07-29 Tue 13:42]
+:END:
+[2025-07-29 Tue 13:42] In file: [[file:///home/dustin/github/GPT2Org/projectile.org::105][projectile.org]]
+
 * Note
 
 ** Here popup intercepts click listener    :org-roam-capture-extension:

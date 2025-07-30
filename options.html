@@ -106,6 +106,17 @@
                 </td>
             </tr>
 
+
+            <tr>
+                <td>
+                    Enter the prompt
+                </td>
+                <td>
+                    <input type="text" id="prompt" placeholder="prompt" />
+                </td>
+            </tr>
+
+
             <tr>
                 <td>
                     Enter your OpenAI API Key
@@ -123,16 +134,6 @@
                     <input type="text" id="modelName" placeholder="Model Name" />
                 </td>
             </tr>
-
-            <tr>
-                <td>
-                    Enter the prompt
-                </td>
-                <td>
-                    <input type="text" id="prompt" placeholder="prompt" />
-                </td>
-            </tr>
-
 
             <tr>
                 <td>
@@ -154,11 +155,52 @@
 
             <tr>
                 <td>
-                    Use DeepSeek instead OpenAI?
+                    Enter the DeepSeek model name
                 </td>
                 <td>
-                    <input id="toUseDeepSeek" type="checkbox" />
+                    <input type="text" id="modelNameDS" placeholder="DeepSeek Model Name" />
                 </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    Enter your Kimi API Key
+                </td>
+                <td>
+                    <input type="text" id="apiKeyKM" placeholder="Kimi API Key" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Enter the Kimi model name
+                </td>
+                <td>
+                    <input type="text" id="modelNameKM" placeholder="Kimi Model Name" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    To use which model?
+                </td>
+                <form id="toUseModelForm">
+                    <label>
+                        <input type="radio" name="option" value="OpenAI">
+                        OpenAI
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="option" value="DeepSeek" checked>
+                        DeepSeek
+                    </label><br>
+
+                    <label>
+                        <input type="radio" name="option" value="Kimi">
+                        Kimi
+                    </label><br>
+                </form>
 	          </tr>
 
             <tr>
