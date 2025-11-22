@@ -23,8 +23,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
         "clockedTemplate": "orc",
         "journalProtocol": "capture",
         "journalTemplate": "orj",
-        "elfeedProtocol": "capture",
-        "elfeedTemplate": "ore",
+        "elfeedProtocol": "elfeed-summary",
         "apiKey": '',
         "modelName": 'gpt-4o-mini',
         "apiKeyDS": '',
@@ -288,30 +287,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (request.action === "saveElfeed") {
         chrome.storage.sync.get(null, (data) => {
-            let uri;
-            if (data.useNewStyleLinks) {
-                uri = "org-protocol://" +
+            let uri = "org-protocol://" +
                     data.elfeedProtocol +
-                    "?template=" +
-                    data.elfeedTemplate +
-                    "&url=" +
+                    "?url=" +
                     request.url +
                     "&title=" +
                     request.title +
-                    "&body=" +
+                    "&summary=" +
                     request.content;
-            } else {
-                uri = "org-protocol://" +
-                    data.elfeedProtocol +
-                    ":/" +
-                    data.elfeedTemplate +
-                    "/" +
-                    request.url +
-                    "/" +
-                    request.title +
-                    "/" +
-                    request.content;
-            }
             location.href = uri;
         });
     }

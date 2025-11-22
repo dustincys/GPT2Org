@@ -37,7 +37,6 @@ function save_options() {
     var journalTemplate = document.getElementById('journalTemplate').value;
 
     var elfeedProtocol = document.getElementById('elfeedProtocol').value;
-    var elfeedTemplate = document.getElementById('elfeedTemplate').value;
 
     var prompt = document.getElementById('prompt').value;
 
@@ -65,7 +64,6 @@ function save_options() {
         "journalProtocol": journalProtocol,
         "journalTemplate": journalTemplate,
         "elfeedProtocol": elfeedProtocol,
-        "elfeedTemplate": elfeedTemplate,
         "apiKey": apiKey,
         "modelName": modelName,
         "apiKeyDS": apiKeyDS,
@@ -100,7 +98,6 @@ function restore_options() {
         document.getElementById('journalProtocol').value = options.journalProtocol;
         document.getElementById('journalTemplate').value = options.journalTemplate;
         document.getElementById('elfeedProtocol').value = options.elfeedProtocol;
-        document.getElementById('elfeedTemplate').value = options.elfeedTemplate;
         document.getElementById('apiKey').value = options.apiKey;
         document.getElementById('modelName').value = options.modelName;
         document.getElementById('apiKeyDS').value = options.apiKeyDS;
