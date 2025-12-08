@@ -12,12 +12,19 @@ const saveJournalBtn = document.getElementById("saveSummaryJournal");
 const saveElfeedBtn = document.getElementById("saveSummaryCurrentElfeed");
 
 
+function escapeIt(text) {
+    return encodeURIComponent(text)
+        .replace(/\(/g, "%28")  // Escape '('
+        .replace(/\)/g, "%29")  // Escape ')'
+        .replace(/'/g, "%27")   // Escape "'"
+        .replace(/\n/g, "%0A");
+}
+
 saveElfeedBtn.addEventListener("click", () => {
     saveElfeedBtn.disabled = true;
-
     chrome.runtime.sendMessage({
         "action": "saveElfeed",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -25,10 +32,9 @@ saveElfeedBtn.addEventListener("click", () => {
 
 saveJournalBtn.addEventListener("click", () => {
     saveJournalBtn.disabled = true;
-
     chrome.runtime.sendMessage({
         "action": "saveJournal",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -36,10 +42,9 @@ saveJournalBtn.addEventListener("click", () => {
 
 saveClockedBtn.addEventListener("click", () => {
     saveClockedBtn.disabled = true;
-
     chrome.runtime.sendMessage({
         "action": "saveClocked",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -48,10 +53,9 @@ saveClockedBtn.addEventListener("click", () => {
 
 saveOrgBtn.addEventListener("click", () => {
     saveOrgBtn.disabled = true;
-
     chrome.runtime.sendMessage({
         "action": "saveOrg",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -59,10 +63,9 @@ saveOrgBtn.addEventListener("click", () => {
 
 saveRoamBtn.addEventListener("click", () => {
     saveRoamBtn.disabled = true;
-
     chrome.runtime.sendMessage({
         "action": "saveRoam",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
