@@ -75,16 +75,16 @@ saveRoamBtn.addEventListener("click", () => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "apiRequestCompleted") {
         spinner.style.display = "none";
+        chrome.storage.local.set({ "isSummaryLoading": false });
+
         if (request.success) {
             summaryContent.textContent = request.summary;
             summaryURL.textContent = request.url;
             summaryTitle.textContent = request.title;
-
             summaryContainer.style.display = "block";
             setTimeout(() => {
                 summaryContainer.style.opacity = "1";
             }, 100);
-
             sendResponse({ status: "success", message: "Data processed successfully." });
         } else {
             sendResponse({ status: "error", message: "Failed to process data." });
@@ -93,6 +93,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 
-chrome.runtime.sendMessage({
-    action: "capture",
+chrome.storage.local.get(["isSummaryLoading"], (result) => {
+    if (result.isSummaryLoading) {
+        // If true: We are already waiting. Do not send "capture".
+        // Just ensure the spinner is visible.
+        // console.log("Already waiting for API Request...");
+        spinner.style.display = "block";
+    } else {
+        // If false: We are safe to send.
+        // Set the flag to true and send the message.
+        chrome.storage.local.set({ "isSummaryLoading": true }, () => {
+            chrome.runtime.sendMessage({
+                action: "capture",
+            });
+        });
+    }
 });
