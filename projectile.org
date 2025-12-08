@@ -258,6 +258,16 @@ CLOSED: [2025-11-22 Sat 16:03]
 :END:
 [2025-07-29 Tue 13:42] In file: [[file:///home/dustin/github/GPT2Org/projectile.org::105][projectile.org]]
 
+** DONE put the console.log into debug control                     :GPT2Org:
+CLOSED: [2025-12-08 Mon 11:58]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2025-12-08 Mon 11:58]
+:END:
+[2025-12-08 Mon 10:37] In file: [[file:///home/dustin/github/GPT2Org/background.js::300][background.js]]
+** CANCELLED change to base64 to encode the summary      :GPT2Org:CANCELLED:
+CLOSED: [2025-12-08 Mon 11:58]
+[2025-12-08 Mon 10:38] In file: [[file:///home/dustin/github/GPT2Org/background.js::300][background.js]]
+
 * Note
 
 ** Here popup intercepts click listener    :org-roam-capture-extension:
