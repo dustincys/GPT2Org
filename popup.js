@@ -14,11 +14,12 @@ const saveJournalBtn = document.getElementById("saveSummaryJournal");
 const saveElfeedBtn = document.getElementById("saveSummaryElfeed");
 
 function escapeIt(text) {
-    return encodeURIComponent(text)
-        .replace(/\(/g, "%28") // Escape '('
-        .replace(/\)/g, "%29") // Escape ')'
-        .replace(/'/g, "%27") // Escape "'"
-        .replace(/\n/g, "%0A");
+    return encodeURIComponent(text);
+    //     .replace(/\(/g, "%28") // Escape '('
+    //     .replace(/\)/g, "%29") // Escape ')'
+    //     .replace(/'/g, "%27") // Escape "'"
+    //     .replace(/\n/g, "%0A");
+    // return text
 }
 
 saveElfeedBtn.addEventListener("click", () => {
