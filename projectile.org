@@ -268,6 +268,13 @@ CLOSED: [2025-12-08 Mon 11:58]
 CLOSED: [2025-12-08 Mon 11:58]
 [2025-12-08 Mon 10:38] In file: [[file:///home/dustin/github/GPT2Org/background.js::300][background.js]]
 
+** DONE setup stream response                                      :GPT2Org:
+CLOSED: [2025-12-09 Tue 09:17]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2025-12-09 Tue 09:17]
+:END:
+[2025-12-09 Tue 08:26] In file: [[file:///home/dustin/github/GPT2Org/background.js::97][background.js]]
+
 * Note
 
 ** Here popup intercepts click listener    :org-roam-capture-extension:
