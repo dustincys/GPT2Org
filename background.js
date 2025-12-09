@@ -178,12 +178,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 return fullSummary;
                             })
                             .then((summary) => {
-                                browser.storage.local.set({
-                                        [hashedKey]: summary
-                                    })
-                                    .catch((error) => {
-                                        console.error('Error saving data:', error);
-                                    });
+                                chrome.storage.local.set({
+                                    [hashedKey]: summary
+                                }).then(() => {
+                                    console.log('Data has been stored in cache');
+                                }).catch((error) => {
+                                    console.error('Error saving data:', error);
+                                });
 
                                 // Notify popup that everything is done
                                 chrome.runtime.sendMessage({
@@ -365,7 +366,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 console.log(uri);
             }
 
-            location.href = uri;
+            setLocation(uri);
         });
     }
 });
