@@ -1,4 +1,3 @@
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "capture") {
         chrome.scripting.executeScript({
@@ -212,9 +211,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Add org or org-roam protocol ///////////////////////////////////////////////
 function setLocation(url) {
     // Query for the active tab in the current window
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, (tabs) => {
         if (tabs[0]) {
-            chrome.tabs.update(tabs[0].id, { url: url });
+            chrome.tabs.update(tabs[0].id, {
+                url: url
+            });
         } else {
             console.error("No active tab found.");
         }
