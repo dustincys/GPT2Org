@@ -104,58 +104,96 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     }
 
                     if (to_use_apikey) {
-                        fetch(apiUrl, {
-                            "method": "POST",
-                            "headers": {
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${to_use_apikey}`,
-                            },
-                            body: JSON.stringify({
-                                "model": to_use_model,
-                                "messages": [
-                                    {
-                                        "role": "system",
-                                        "content": prompt,
-                                    },
-                                    {
-                                        "role": "user",
-                                        "content": request.content,
-                                    },
-                                ],
-                            }),
-                        })
-                            .then((response) => {
-                                if (!response.ok) {
-                                    throw new Error(
-                                        `API request failed with status ${response.status}`
-                                    );
-                                }
-                                return response.json();
-                            })
-                            .then((data) => {
-                                if (data.choices && data.choices.length > 0) {
-                                    const summary = data.choices[0].message.content.trim();
+                        // 1. Send a signal to Popup to start the UI (hide spinner)
+                        chrome.runtime.sendMessage({
+                            action: "streamStart"
+                        });
 
-                                    chrome.storage.local.set({ [hashedKey]: summary }).then(() => {
-                                        console.log('Data has been stored in cache');
-                                    }).catch((error) => {
+                        fetch(apiUrl, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${to_use_apikey}`,
+                                },
+                                body: JSON.stringify({
+                                    "model": to_use_model,
+                                    "messages": [{
+                                            "role": "system",
+                                            "content": prompt
+                                        },
+                                        {
+                                            "role": "user",
+                                            "content": request.content
+                                        },
+                                    ],
+                                    "stream": true // <--- IMPORTANT: Enable streaming
+                                }),
+                            })
+                            .then(async (response) => {
+                                if (!response.ok) {
+                                    throw new Error(`API request failed with status ${response.status}`);
+                                }
+
+                                const reader = response.body.getReader();
+                                const decoder = new TextDecoder("utf-8");
+                                let fullSummary = "";
+
+                                while (true) {
+                                    const {
+                                        done,
+                                        value
+                                    } = await reader.read();
+                                    if (done) break;
+
+                                    const chunk = decoder.decode(value, {
+                                        stream: true
+                                    });
+                                    const lines = chunk.split("\n");
+
+                                    for (const line of lines) {
+                                        const trimmed = line.trim();
+                                        // Parse standard SSE format: "data: {...}"
+                                        if (trimmed.startsWith("data: ")) {
+                                            const dataStr = trimmed.slice(6);
+                                            if (dataStr === "[DONE]") continue; // Stream finished
+
+                                            try {
+                                                const json = JSON.parse(dataStr);
+                                                // OpenAI/DeepSeek/Kimi use choices[0].delta.content
+                                                const contentDelta = json.choices[0]?.delta?.content || "";
+
+                                                if (contentDelta) {
+                                                    fullSummary += contentDelta;
+                                                    // Send partial chunk to popup
+                                                    chrome.runtime.sendMessage({
+                                                        action: "streamChunk",
+                                                        chunk: contentDelta
+                                                    });
+                                                }
+                                            } catch (e) {
+                                                console.warn("Stream parse error:", e);
+                                            }
+                                        }
+                                    }
+                                }
+                                return fullSummary;
+                            })
+                            .then((summary) => {
+                                browser.storage.local.set({
+                                        [hashedKey]: summary
+                                    })
+                                    .catch((error) => {
                                         console.error('Error saving data:', error);
                                     });
 
-                                    chrome.runtime.sendMessage({
-                                        "action": "apiRequestCompleted",
-                                        "success": true,
-                                        "summary": summary,
-                                        "url": request.url,
-                                        "title": request.title,
-                                    });
-                                } else {
-                                    console.error("Error: No summary data received from the API");
-                                    chrome.runtime.sendMessage({
-                                        "action": "apiRequestCompleted",
-                                        "success": false,
-                                    });
-                                }
+                                // Notify popup that everything is done
+                                chrome.runtime.sendMessage({
+                                    "action": "apiRequestCompleted",
+                                    "success": true,
+                                    "summary": summary,
+                                    "url": request.url,
+                                    "title": request.title,
+                                });
                             })
                             .catch((error) => {
                                 console.error(error);
