@@ -104,7 +104,6 @@ button:disabled {
 
 .summary-content {
     white-space: pre-wrap;
-    max-height: 300px;
     overflow-y: auto;
 }
 

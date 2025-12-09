@@ -77,8 +77,8 @@ saveRoamBtn.addEventListener("click", () => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // 1. Prepare UI when streaming starts
     if (request.action === "streamStart") {
-        spinner.style.display = "block";
-        summaryContainer.style.display = "block";
+        spinner.style.display = "flex";
+        summaryContainer.style.display = "none";
         buttonContainer.style.display = "none";
 
         // Make sure it's visible
@@ -97,6 +97,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // Append the new chunk to the existing text
         if (summaryContent.textContent === "") {
             spinner.style.display = "none";
+            summaryContainer.style.display = "block";
         }
         summaryContent.textContent += request.chunk;
     }
