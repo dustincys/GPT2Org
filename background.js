@@ -1,19 +1,22 @@
-function onExecuted(result) {
-}
+function onExecuted(result) {}
 
 function onExecutedCapture(result) {
-    var capture_exec = browser.tabs.executeScript({ file: "capture.js" });
+    var capture_exec = browser.tabs.executeScript({
+        file: "capture.js"
+    });
     capture_exec.then(onExecuted, onError);
 }
-function onError(error) {
-}
+
+function onError(error) {}
 
 function runScripts() {
-    var readability_exec = browser.tabs.executeScript({ file: "lib/Readability.js" });
+    var readability_exec = browser.tabs.executeScript({
+        file: "lib/Readability.js"
+    });
     readability_exec.then(onExecutedCapture, onError);
 }
 
-chrome.runtime.onInstalled.addListener(function (details) {
+chrome.runtime.onInstalled.addListener(function(details) {
     chrome.storage.sync.set({
         "ronProtocol": "capture",
         "ronTemplate": "orp",
@@ -56,7 +59,7 @@ async function hashString(str) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
-        chrome.storage.sync.get(null, async(data) => {
+        chrome.storage.sync.get(null, async (data) => {
             const apiKey = data.apiKey;
             const model = data.modelName;
             const apiKeyDS = data.apiKeyDS;
@@ -109,63 +112,111 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         to_use_model = model;
                     }
 
+                    // ... inside chrome.runtime.onMessage.addListener for "summarizeContent"
+                    // ... inside the else block (where data is NOT in cache) ...
+
                     if (to_use_apikey) {
+                        // 1. Send a signal to Popup to start the UI (hide spinner)
+                        chrome.runtime.sendMessage({
+                            action: "streamStart"
+                        });
+
                         fetch(apiUrl, {
-                            "method": "POST",
-                            "headers": {
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${to_use_apikey}`,
-                            },
-                            body: JSON.stringify({
-                                "model": to_use_model,
-                                "messages": [
-                                    {
-                                        "role": "system",
-                                        "content": prompt,
-                                    },
-                                    {
-                                        "role": "user",
-                                        "content": request.content,
-                                    },
-                                ],
-                            }),
-                        })
-                            .then((response) => {
-                                if (!response.ok) {
-                                    throw new Error(
-                                        `API request failed with status ${response.status}`
-                                    );
-                                }
-                                return response.json();
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${to_use_apikey}`,
+                                },
+                                body: JSON.stringify({
+                                    "model": to_use_model,
+                                    "messages": [{
+                                            "role": "system",
+                                            "content": prompt
+                                        },
+                                        {
+                                            "role": "user",
+                                            "content": request.content
+                                        },
+                                    ],
+                                    "stream": true // <--- IMPORTANT: Enable streaming
+                                }),
                             })
-                            .then((data) => {
-                                if (data.choices && data.choices.length > 0) {
-                                    const summary = data.choices[0].message.content.trim();
-                                    const decodedTitle = decodeURIComponent(request.title);
-                                    const decodedURL = decodeURIComponent(request.url);
+                            .then(async (response) => {
+                                if (!response.ok) {
+                                    throw new Error(`API request failed with status ${response.status}`);
+                                }
 
-                                    navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
+                                const reader = response.body.getReader();
+                                const decoder = new TextDecoder("utf-8");
+                                let fullSummary = "";
 
-                                    browser.storage.local.set({ [hashedKey]: summary })
+                                while (true) {
+                                    const {
+                                        done,
+                                        value
+                                    } = await reader.read();
+                                    if (done) break;
+
+                                    const chunk = decoder.decode(value, {
+                                        stream: true
+                                    });
+                                    const lines = chunk.split("\n");
+
+                                    for (const line of lines) {
+                                        const trimmed = line.trim();
+                                        // Parse standard SSE format: "data: {...}"
+                                        if (trimmed.startsWith("data: ")) {
+                                            const dataStr = trimmed.slice(6);
+                                            if (dataStr === "[DONE]") continue; // Stream finished
+
+                                            try {
+                                                const json = JSON.parse(dataStr);
+                                                // OpenAI/DeepSeek/Kimi use choices[0].delta.content
+                                                const contentDelta = json.choices[0]?.delta?.content || "";
+
+                                                if (contentDelta) {
+                                                    fullSummary += contentDelta;
+                                                    // Send partial chunk to popup
+                                                    chrome.runtime.sendMessage({
+                                                        action: "streamChunk",
+                                                        chunk: contentDelta
+                                                    });
+                                                }
+                                            } catch (e) {
+                                                console.warn("Stream parse error:", e);
+                                            }
+                                        }
+                                    }
+                                }
+                                return fullSummary;
+                            })
+                            .then((summary) => {
+                                // Stream is complete, perform final save and clipboard actions
+                                const decodedTitle = decodeURIComponent(request.title);
+                                const decodedURL = decodeURIComponent(request.url);
+
+                                // Copy to clipboard
+                                navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${summary}`);
+
+                                // Save to storage
+                                browser.storage.local.set({
+                                        [hashedKey]: summary
+                                    })
                                     .catch((error) => {
                                         console.error('Error saving data:', error);
                                     });
 
-                                    chrome.runtime.sendMessage({
-                                        "action": "apiRequestCompleted",
-                                        "success": true,
-                                        "summary": summary,
-                                        "url": request.url,
-                                        "title": request.title,
-                                    });
-                                } else {
-                                    chrome.runtime.sendMessage({
-                                        "action": "apiRequestCompleted",
-                                        "success": false,
-                                    });
-                                }
+                                // Notify popup that everything is done
+                                chrome.runtime.sendMessage({
+                                    "action": "apiRequestCompleted",
+                                    "success": true,
+                                    "summary": summary,
+                                    "url": request.url,
+                                    "title": request.title,
+                                });
                             })
                             .catch((error) => {
+                                console.error(error);
                                 chrome.runtime.sendMessage({
                                     "action": "apiRequestCompleted",
                                     "success": false,
@@ -308,13 +359,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "saveElfeed") {
         chrome.storage.sync.get(null, (data) => {
             let uri = "org-protocol://" +
-                    data.elfeedProtocol +
-                    "?url=" +
-                    request.url +
-                    "&title=" +
-                    request.title +
-                    "&summary=" +
-                    request.content;
+                data.elfeedProtocol +
+                "?url=" +
+                request.url +
+                "&title=" +
+                request.title +
+                "&summary=" +
+                request.content;
 
             if (data.debug) {
                 console.log(uri); // Log the URI for debugging
