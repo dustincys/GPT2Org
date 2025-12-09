@@ -13,13 +13,20 @@ const saveClockedBtn = document.getElementById("saveSummaryClocked");
 const saveJournalBtn = document.getElementById("saveSummaryJournal");
 const saveElfeedBtn = document.getElementById("saveSummaryElfeed");
 
+function escapeIt(text) {
+    return encodeURIComponent(text)
+        .replace(/\(/g, "%28") // Escape '('
+        .replace(/\)/g, "%29") // Escape ')'
+        .replace(/'/g, "%27") // Escape "'"
+        .replace(/\n/g, "%0A");
+}
 
 saveElfeedBtn.addEventListener("click", () => {
     saveElfeedBtn.disabled = true;
 
     chrome.runtime.sendMessage({
         "action": "saveElfeed",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -30,7 +37,7 @@ saveJournalBtn.addEventListener("click", () => {
 
     chrome.runtime.sendMessage({
         "action": "saveJournal",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -41,7 +48,7 @@ saveClockedBtn.addEventListener("click", () => {
 
     chrome.runtime.sendMessage({
         "action": "saveClocked",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -53,7 +60,7 @@ saveOrgBtn.addEventListener("click", () => {
 
     chrome.runtime.sendMessage({
         "action": "saveOrg",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
@@ -64,7 +71,7 @@ saveRoamBtn.addEventListener("click", () => {
 
     chrome.runtime.sendMessage({
         "action": "saveRoam",
-        "content": summaryContent.textContent.replace(/\n/g, "%0A"),
+        "content": escapeIt(summaryContent.textContent),
         "url": summaryURL.textContent,
         "title": summaryTitle.textContent,
     });
