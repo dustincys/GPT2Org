@@ -122,15 +122,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const decodedURL = decodeURIComponent(request.url);
             navigator.clipboard.writeText(`Title: ${decodedTitle}\nURL: ${decodedURL}\nSummary:\n${request.summary}`);
 
-            sendResponse({ status: "success", message: "Data processed successfully." });
+            sendResponse({
+                status: "success",
+                message: "Data processed successfully."
+            });
         } else {
-            sendResponse({ status: "error", message: "Failed to process data." });
+            sendResponse({
+                status: "error",
+                message: "Failed to process data."
+            });
         }
     }
 });
 
 
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+chrome.tabs.query({
+    active: true,
+    currentWindow: true
+}, (tabs) => {
     chrome.runtime.sendMessage({
         "action": "capture",
         "tabId": tabs[0].id,
