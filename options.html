@@ -1,168 +1,171 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Org Capture Settings</title>
-        <style>
-         body: { padding: 10px; }
-        </style>
-    </head>
 
-    <body>
+<head>
+    <title>Org Capture Settings</title>
+    <style>
+        body: {
+            padding: 10px;
+        }
+    </style>
+</head>
 
-        <table>
+<body>
 
-            <tr>
-                <td>
-                    (Roam old node) protocol
-                </td>
-                <td>
-                    <input id="ronProtocol" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    (Roam old node) template
-                </td>
-                <td>
-                    <input id="ronTemplate" />
-                </td>
-            </tr>
+    <table>
 
-            <tr>
-                <td>
-                    (Roam new node) protocol
-                </td>
-                <td>
-                    <input id="rnnProtocol" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    (Roam new node) template
-                </td>
-                <td>
-                    <input id="rnnTemplate" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                (Roam old node) protocol
+            </td>
+            <td>
+                <input id="ronProtocol" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                (Roam old node) template
+            </td>
+            <td>
+                <input id="ronTemplate" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    (Clocked) protocol
-                </td>
-                <td>
-                    <input id="clockedProtocol" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    (Clocked) template
-                </td>
-                <td>
-                    <input id="clockedTemplate" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                (Roam new node) protocol
+            </td>
+            <td>
+                <input id="rnnProtocol" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                (Roam new node) template
+            </td>
+            <td>
+                <input id="rnnTemplate" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    (Journal) protocol
-                </td>
-                <td>
-                    <input id="journalProtocol" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    (Journal) template
-                </td>
-                <td>
-                    <input id="journalTemplate" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                (Clocked) protocol
+            </td>
+            <td>
+                <input id="clockedProtocol" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                (Clocked) template
+            </td>
+            <td>
+                <input id="clockedTemplate" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                (Journal) protocol
+            </td>
+            <td>
+                <input id="journalProtocol" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                (Journal) template
+            </td>
+            <td>
+                <input id="journalTemplate" />
+            </td>
+        </tr>
 
 
-            <tr>
-                <td>
-                    (Elfeed) protocol
-                </td>
-                <td>
-                    <input id="elfeedProtocol" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                (Elfeed) protocol
+            </td>
+            <td>
+                <input id="elfeedProtocol" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Use New-Style links? (Recommended for Org-Mode 9.0+)
-                </td>
-                <td>
-                    <input id="useNewStyle" type="checkbox" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Use New-Style links? (Recommended for Org-Mode 9.0+)
+            </td>
+            <td>
+                <input id="useNewStyle" type="checkbox" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Enter the prompt
-                </td>
-                <td>
-                    <input type="text" id="prompt" placeholder="prompt" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Enter the prompt
+            </td>
+            <td>
+                <input type="text" id="prompt" placeholder="prompt" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Enter your OpenAI API Key
-                </td>
-                <td>
-                    <input type="text" id="apiKey" placeholder="API Key" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Enter your OpenAI API Key
+            </td>
+            <td>
+                <input type="text" id="apiKey" placeholder="API Key" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Enter the OpenAI model name
-                </td>
-                <td>
-                    <input type="text" id="modelName" placeholder="Model Name" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Enter the OpenAI model name
+            </td>
+            <td>
+                <input type="text" id="modelName" placeholder="Model Name" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Enter your DeepSeek API Key
-                </td>
-                <td>
-                    <input type="text" id="apiKeyDS" placeholder="DeepSeek API Key" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Enter your DeepSeek API Key
+            </td>
+            <td>
+                <input type="text" id="apiKeyDS" placeholder="DeepSeek API Key" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Enter the DeepSeek model name
-                </td>
-                <td>
-                    <input type="text" id="modelNameDS" placeholder="DeepSeek Model Name" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Enter the DeepSeek model name
+            </td>
+            <td>
+                <input type="text" id="modelNameDS" placeholder="DeepSeek Model Name" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Enter your Kimi API Key
-                </td>
-                <td>
-                    <input type="text" id="apiKeyKM" placeholder="Kimi API Key" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Enter your Kimi API Key
+            </td>
+            <td>
+                <input type="text" id="apiKeyKM" placeholder="Kimi API Key" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Enter the Kimi model name
-                </td>
-                <td>
-                    <input type="text" id="modelNameKM" placeholder="Kimi Model Name" />
-                </td>
-            </tr>
+        <tr>
+            <td>
+                Enter the Kimi model name
+            </td>
+            <td>
+                <input type="text" id="modelNameKM" placeholder="Kimi Model Name" />
+            </td>
+        </tr>
 
-            <tr>
-                <td>
+        <tr>
+            <td>
                 <form id="toUseModel">
                     To use which model?
                     <label>
@@ -178,23 +181,25 @@
                         Kimi
                     </label>
                 </form>
-                </td>
-	          </tr>
+            </td>
+        </tr>
 
-            <tr>
-                <td>
-                    Debug (will produce logging messages to console)
-                </td>
-                <td>
-                    <input id="debug" type="checkbox" />
-                </td>
-		            <td><bold>Note:</bold> You will have to enable "Preserve Log" in the console in order to see the logged messages.
-	          </tr>
-        </table>
+        <tr>
+            <td>
+                Debug (will produce logging messages to console)
+            </td>
+            <td>
+                <input id="debug" type="checkbox" />
+            </td>
+            <td>
+                <bold>Note:</bold> You will have to enable "Preserve Log" in the console in order to see the logged messages.
+        </tr>
+    </table>
 
-        <div id="status"></div>
-        <button id="save">Save</button>
+    <div id="status"></div>
+    <button id="save">Save</button>
 
-        <script src="options.js"></script>
-    </body>
+    <script src="options.js"></script>
+</body>
+
 </html>
