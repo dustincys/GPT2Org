@@ -211,7 +211,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
-            // location.href = uri;
+
+            if (data.debug) {
+                console.log(uri);
+            }
+
             setLocation(uri);
         });
     }
@@ -227,6 +231,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 request.title +
                 "&body=" +
                 request.content;
+
+            if (data.debug) {
+                console.log(uri);
+            }
+
             setLocation(uri);
         });
     }
@@ -256,6 +265,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
+
+            if (data.debug) {
+                console.log(uri);
+            }
+
             setLocation(uri);
         });
     }
@@ -286,6 +300,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     "/" +
                     request.content;
             }
+
+            if (data.debug) {
+                console.log(uri);
+            }
+
             setLocation(uri);
         });
     }
@@ -315,6 +334,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     request.title +
                     "/" +
                     request.content;
+
+            if (data.debug) {
+                console.log(uri);
             }
             location.href = uri;
         });
