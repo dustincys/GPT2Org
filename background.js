@@ -2,7 +2,9 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "capture") {
         chrome.scripting.executeScript({
-            target: { tabId: request.tabId },
+            target: {
+                tabId: request.tabId
+            },
             files: ['lib/Readability.js', 'capture.js']
         }).then(() => {
             console.log('Readability.js capture.js executed successfully');
@@ -50,7 +52,7 @@ async function hashString(str) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
-        chrome.storage.sync.get(null, async(data) => {
+        chrome.storage.sync.get(null, async (data) => {
             const apiKey = data.apiKey;
             const model = data.modelName;
             const apiKeyDS = data.apiKeyDS;
@@ -157,7 +159,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 }
                             })
                             .catch((error) => {
-                                console.error("Error:", error);
+                                console.error(error);
                                 chrome.runtime.sendMessage({
                                     "action": "apiRequestCompleted",
                                     "success": false,
