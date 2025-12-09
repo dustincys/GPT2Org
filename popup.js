@@ -5,6 +5,8 @@ const summaryContent = document.getElementById("summaryContent");
 const summaryURL = document.getElementById("summaryURL");
 const summaryTitle = document.getElementById("summaryTitle");
 
+const buttonContainer = document.getElementById("buttonContainer");
+
 const saveOrgBtn = document.getElementById("saveSummaryOrg");
 const saveRoamBtn = document.getElementById("saveSummaryRoam");
 const saveClockedBtn = document.getElementById("saveSummaryClocked");
@@ -78,6 +80,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             summaryTitle.textContent = request.title;
 
             summaryContainer.style.display = "block";
+            buttonContainer.style.display = "block";
+
             setTimeout(() => {
                 summaryContainer.style.opacity = "1";
             }, 100);
