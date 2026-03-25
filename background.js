@@ -33,7 +33,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         "modelNameDS": 'deepseek-chat',
         "apiKeyKM": '',
         "modelNameKM": 'moonshot-v1-32k',
-        "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese. If it is not a tumor biology or medicine related paper, please just summarze it in no more than 10 bullets in simple Chinese in total.',
+        "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese first, then in English. If it is not a tumor biology or medicine related paper, please just summarze it in no more than 10 bullets in simple Chinese in total first then in English.',
         "useNewStyleLinks": true,
         "toUseModel": "DeepSeek",
         "debug": false,
