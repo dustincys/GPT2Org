@@ -90,6 +90,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         summaryContent.textContent = "";
         // You might want to pass title/url in streamStart or set them earlier, 
         // but often they are set at the end. For better UX, you could set them here if you have them.
+
+        summaryContent.contentEditable = "false";
     }
 
     // 2. Append text as it arrives
@@ -109,6 +111,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.success) {
             // Ensure the final text matches exactly what was saved
             summaryContent.textContent = request.summary;
+            summaryContent.contentEditable = "true";
             summaryURL.textContent = request.url;
             summaryTitle.textContent = request.title;
 
