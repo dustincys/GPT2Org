@@ -10,17 +10,34 @@ textual content from the entire web page using the standalone version of the
 readability library, which is also utilized in the [Firefox Reader
 View](https://support.mozilla.org/kb/firefox-reader-view-clutter-free-web-pages)
 View feature. The extracted text is then processed by
-[OpenAI](https://openai.com/)'s Language Model (LLM) to generate a concise
-summary. Users have the option to customize the type of operation performed on
-the extracted text by providing a specific prompt. The summarized content can be
-saved via org-protocol, with detailed instructions available on the
-[Org-Mode](https://orgmode.org/) website for configuring this functionality. The
-extension includes four pre-configured capture buttons that correspond to
-different org-protocol templates. These templates enable users to save the
-summarized content as a new [org-roam](https://www.orgroam.com/) node, append it
-to an existing [org-roam](https://www.orgroam.com/) node, track it as a
+[DeepSeek](https://www.deepseek.com/)'s or [OpenAI](https://openai.com/)'s
+Language Model (LLM) to generate a concise summary. Users have the option to
+customize the type of operation performed on the extracted text by providing a
+specific prompt. The summarized content can be saved via org-protocol, with
+detailed instructions available on the [Org-Mode](https://orgmode.org/) website
+for configuring this functionality. The extension includes four pre-configured
+capture buttons that correspond to different org-protocol templates. These
+templates enable users to save the summarized content as a new
+[org-roam](https://www.orgroam.com/) node, append it to an existing
+[org-roam](https://www.orgroam.com/) node, track it as a
 [clocking](https://orgmode.org/manual/Clocking-commands.html) item, or add it to
 their daily journal.
+
+The default model is DeepSeek's ~deepseek-v4-pro~. The extension supports
+DeepSeek, OpenAI, and Kimi (Moonshot) APIs. You can configure API keys and model
+names in the extension's options page.
+
+* Thinking Mode (DeepSeek)
+The extension supports DeepSeek's [[https://api-docs.deepseek.com/guides/thinking_mode][thinking mode]] via the ~thinking~ and
+~reasoning_effort~ API parameters.
+
+- *Left-click* the toolbar button :: Normal mode — sends a standard request
+  without thinking parameters.
+- *Middle-click* the toolbar button :: Thinking mode enabled — the request
+  includes ~"thinking": {"type": "enabled"}~ and ~"reasoning_effort": "high"~,
+  which enables DeepSeek's extended thinking/reasoning capability for more
+  thorough analysis. The summarized results with and without thinking mode are
+  cached separately.
 
 Utilizing the OpenAI API, one can efficiently extract a succinct summary from a
 webpage by providing the necessary prompt and API key. This API facilitates the

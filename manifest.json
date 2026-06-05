@@ -29,7 +29,6 @@
     "browser_action": {
         "browser_style": true,
         "default_icon": "img/icon.png",
-        "default_popup": "popup.html",
         "default_title": "GPT2Org"
     },
     "commands": {

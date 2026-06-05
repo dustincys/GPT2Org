@@ -1,3 +1,5 @@
+let thinkingModeEnabled = false;
+
 function onExecuted(result) {}
 
 function onExecutedCapture(result) {
@@ -30,7 +32,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         "apiKey": '',
         "modelName": 'gpt-4o-mini',
         "apiKeyDS": '',
-        "modelNameDS": 'deepseek-chat',
+        "modelNameDS": 'deepseek-v4-pro',
         "apiKeyKM": '',
         "modelNameKM": 'moonshot-v1-32k',
         "prompt": 'I will provide you a web page content. You should ignore the noise text in it. if it is a tumor biology or medicine related paper, please summarize in 4 sections: how the biology experiment design, how the data generated, what is the innovative points the paper proposed, what is the conclusion. If it is a software or algorithm or tool paper, please summarize in 5 sections: what is the input, what is the output, what is model or algorithm, what is the innovative points, and what is the conclusion.Please summarize each section in no more than 10 bullets in simple Chinese. If it is not a tumor biology or medicine related paper, please just summarze it in no more than 10 bullets in simple Chinese. Please do not reply with "好的..", just give me the summary directly.',
@@ -38,6 +40,15 @@ chrome.runtime.onInstalled.addListener(function(details) {
         "toUseModel": "DeepSeek",
         "debug": false,
     });
+});
+
+browser.browserAction.onClicked.addListener((tab, info) => {
+    if (info && info.button === 1) {
+        thinkingModeEnabled = true;
+    } else {
+        thinkingModeEnabled = false;
+    }
+    browser.browserAction.openPopup({ windowId: tab.windowId });
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -74,11 +85,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             if (toUseModel === "OpenAI") {
                 hashStr = `${apiKey}${prompt}${model}${toUseModel}${requestUrl}`;
             } else if (toUseModel === "DeepSeek") {
-                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}`;
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}${thinkingModeEnabled ? 'thinking_on' : 'thinking_off'}`;
             } else if (toUseModel === "Kimi") {
                 hashStr = `${apiKeyKM}${prompt}${modelKM}${toUseModel}${requestUrl}`;
             } else {
-                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}`;
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}${thinkingModeEnabled ? 'thinking_on' : 'thinking_off'}`;
             }
 
             const hashedKey = await hashString(hashStr);
@@ -121,25 +132,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             action: "streamStart"
                         });
 
+                        const requestBody = {
+                            "model": to_use_model,
+                            "messages": [{
+                                    "role": "system",
+                                    "content": prompt
+                                },
+                                {
+                                    "role": "user",
+                                    "content": request.content
+                                },
+                            ],
+                            "stream": true
+                        };
+
+                        if (thinkingModeEnabled) {
+                            requestBody.thinking = { "type": "enabled" };
+                            requestBody.reasoning_effort = "high";
+                        }
+
                         fetch(apiUrl, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
                                     "Authorization": `Bearer ${to_use_apikey}`,
                                 },
-                                body: JSON.stringify({
-                                    "model": to_use_model,
-                                    "messages": [{
-                                            "role": "system",
-                                            "content": prompt
-                                        },
-                                        {
-                                            "role": "user",
-                                            "content": request.content
-                                        },
-                                    ],
-                                    "stream": true // <--- IMPORTANT: Enable streaming
-                                }),
+                                body: JSON.stringify(requestBody),
                             })
                             .then(async (response) => {
                                 if (!response.ok) {
