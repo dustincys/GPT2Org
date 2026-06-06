@@ -21,7 +21,8 @@
         "tabs",
         "storage",
         "scripting",
-        "clipboardWrite"
+        "clipboardWrite",
+        "contextMenus"
     ],
     "options_ui": {
         "page": "options.html"
@@ -29,7 +30,8 @@
     "browser_action": {
         "browser_style": true,
         "default_icon": "img/icon.png",
-        "default_title": "GPT2Org"
+        "default_title": "GPT2Org",
+        "default_popup": "popup.html"
     },
     "commands": {
         "_execute_browser_action": {

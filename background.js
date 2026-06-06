@@ -42,14 +42,156 @@ chrome.runtime.onInstalled.addListener(function(details) {
     });
 });
 
-browser.browserAction.onClicked.addListener((tab, info) => {
-    if (info && info.button === 1) {
-        thinkingModeEnabled = true;
-    } else {
-        thinkingModeEnabled = false;
+// Helper: escape text for org-protocol URIs
+function escapeIt(text) {
+    return encodeURIComponent(text)
+        .replace(/\(/g, "%28")
+        .replace(/\)/g, "%29")
+        .replace(/'/g, "%27");
+}
+
+// Build and trigger org-protocol URI from the background page
+function triggerOrgProtocol(uri, debug) {
+    if (debug) {
+        console.log(uri);
     }
-    browser.browserAction.openPopup({ windowId: tab.windowId });
+    location.href = uri;
+}
+
+// Create right-click context menu for DeepSeek thinking mode
+browser.contextMenus.create({
+    id: "gpt2org-thinking",
+    title: "GPT2Org (Deep Think)",
+    contexts: ["page"],
+    icons: {
+        "256": "img/icon.png"
+    }
 });
+
+// Context menu: Org-protocol (selection only)
+browser.contextMenus.create({
+    id: "gpt2org-org-protocol",
+    title: "GPT2Org - Org-protocol",
+    contexts: ["selection"],
+    icons: {
+        "256": "img/icon.png"
+    }
+});
+
+// Context menu: Journal (selection only)
+browser.contextMenus.create({
+    id: "gpt2org-journal",
+    title: "GPT2Org - Journal",
+    contexts: ["selection"],
+    icons: {
+        "256": "img/icon.png"
+    }
+});
+
+// Context menu: Clock-in (selection only)
+browser.contextMenus.create({
+    id: "gpt2org-clock-in",
+    title: "GPT2Org - Clock-in",
+    contexts: ["selection"],
+    icons: {
+        "256": "img/icon.png"
+    }
+});
+
+
+
+
+// Handle context menu click
+browser.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === "gpt2org-thinking") {
+        thinkingModeEnabled = true;
+        browser.browserAction.openPopup({ windowId: tab.windowId });
+    }
+
+    if (info.menuItemId === "gpt2org-org-protocol") {
+        chrome.storage.sync.get(null, (data) => {
+            const escapedText = escapeIt(info.selectionText);
+            const encodedUrl = encodeURIComponent(tab.url);
+            const escapedTitle = escapeIt(tab.title);
+
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.ronProtocol +
+                    "?template=" + data.ronTemplate +
+                    "&url=" + encodedUrl +
+                    "&title=" + escapedTitle +
+                    "&body=" + escapedText;
+            } else {
+                uri = "org-protocol://" +
+                    data.ronProtocol +
+                    ":/" + data.ronTemplate +
+                    "/" + encodedUrl +
+                    "/" + escapedTitle +
+                    "/" + escapedText;
+            }
+
+            triggerOrgProtocol(uri, data.debug);
+        });
+    }
+
+    if (info.menuItemId === "gpt2org-journal") {
+        chrome.storage.sync.get(null, (data) => {
+            const escapedText = escapeIt(info.selectionText);
+            const encodedUrl = encodeURIComponent(tab.url);
+            const escapedTitle = escapeIt(tab.title);
+
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.journalProtocol +
+                    "?template=" + data.journalTemplate +
+                    "&url=" + encodedUrl +
+                    "&title=" + escapedTitle +
+                    "&body=" + escapedText;
+            } else {
+                uri = "org-protocol://" +
+                    data.journalProtocol +
+                    ":/" + data.journalTemplate +
+                    "/" + encodedUrl +
+                    "/" + escapedTitle +
+                    "/" + escapedText;
+            }
+
+            triggerOrgProtocol(uri, data.debug);
+        });
+    }
+
+    if (info.menuItemId === "gpt2org-clock-in") {
+        chrome.storage.sync.get(null, (data) => {
+            const escapedText = escapeIt(info.selectionText);
+            const encodedUrl = encodeURIComponent(tab.url);
+            const escapedTitle = escapeIt(tab.title);
+
+            let uri;
+            if (data.useNewStyleLinks) {
+                uri = "org-protocol://" +
+                    data.clockedProtocol +
+                    "?template=" + data.clockedTemplate +
+                    "&url=" + encodedUrl +
+                    "&title=" + escapedTitle +
+                    "&body=" + escapedText;
+            } else {
+                uri = "org-protocol://" +
+                    data.clockedProtocol +
+                    ":/" + data.clockedTemplate +
+                    "/" + encodedUrl +
+                    "/" + escapedTitle +
+                    "/" + escapedText;
+            }
+
+            triggerOrgProtocol(uri, data.debug);
+        });
+    }
+});
+
+
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "capture") {
@@ -70,6 +212,10 @@ async function hashString(str) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "summarizeContent") {
+        // Capture and reset thinking mode flag so it only applies to this request
+        const useThinkingMode = thinkingModeEnabled;
+        thinkingModeEnabled = false;
+
         chrome.storage.sync.get(null, async (data) => {
             const apiKey = data.apiKey;
             const model = data.modelName;
@@ -85,11 +231,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             if (toUseModel === "OpenAI") {
                 hashStr = `${apiKey}${prompt}${model}${toUseModel}${requestUrl}`;
             } else if (toUseModel === "DeepSeek") {
-                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}${thinkingModeEnabled ? 'thinking_on' : 'thinking_off'}`;
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}${useThinkingMode ? 'thinking_on' : 'thinking_off'}`;
             } else if (toUseModel === "Kimi") {
                 hashStr = `${apiKeyKM}${prompt}${modelKM}${toUseModel}${requestUrl}`;
             } else {
-                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}${thinkingModeEnabled ? 'thinking_on' : 'thinking_off'}`;
+                hashStr = `${apiKeyDS}${prompt}${modelDS}${toUseModel}${requestUrl}${useThinkingMode ? 'thinking_on' : 'thinking_off'}`;
             }
 
             const hashedKey = await hashString(hashStr);
@@ -146,7 +292,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             "stream": true
                         };
 
-                        if (thinkingModeEnabled) {
+                        if (useThinkingMode) {
                             requestBody.thinking = { "type": "enabled" };
                             requestBody.reasoning_effort = "high";
                         }
