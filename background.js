@@ -72,7 +72,7 @@ browser.contextMenus.create({
 browser.contextMenus.create({
     id: "gpt2org-org-protocol",
     title: "GPT2Org - Org-protocol",
-    contexts: ["selection"],
+    contexts: ["all"],
     icons: {
         "256": "img/icon.png"
     }
@@ -82,7 +82,7 @@ browser.contextMenus.create({
 browser.contextMenus.create({
     id: "gpt2org-journal",
     title: "GPT2Org - Journal",
-    contexts: ["selection"],
+    contexts: ["all"],
     icons: {
         "256": "img/icon.png"
     }
@@ -92,13 +92,11 @@ browser.contextMenus.create({
 browser.contextMenus.create({
     id: "gpt2org-clock-in",
     title: "GPT2Org - Clock-in",
-    contexts: ["selection"],
+    contexts: ["all"],
     icons: {
         "256": "img/icon.png"
     }
 });
-
-
 
 
 // Handle context menu click
