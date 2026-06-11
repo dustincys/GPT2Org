@@ -27,7 +27,46 @@ The default model is DeepSeek's ~deepseek-v4-pro~. The extension supports
 DeepSeek, OpenAI, and Kimi (Moonshot) APIs. You can configure API keys and model
 names in the extension's options page.
 
-* Thinking Mode (DeepSeek)
+* Usage
+** Setup
+1. Install the extension in Firefox or Chrome.
+2. Right-click the toolbar icon and select "Manage Extension" (Firefox) or
+   "Options" (Chrome), or navigate to =about:addons= (Firefox) /
+   =chrome://extensions= (Chrome) and find GPT2Org's preferences.
+3. In the options page, configure:
+   - Your API keys (OpenAI, DeepSeek, and/or Kimi).
+   - Model names for each provider.
+   - Select which model to use via the radio buttons.
+   - Customize the prompt if desired.
+   - Set up your org-protocol templates (see [[*Set your org or org-roam templates][templates section]]).
+4. Click *Save*.
+
+** Summarizing a Webpage
+1. Navigate to any webpage you want to summarize.
+2. Click the GPT2Org toolbar icon.
+3. A popup will appear with buttons for different capture modes:
+   - *Roam old node* :: Append summary to an existing org-roam node.
+   - *Roam new node* :: Create a new org-roam node with the summary.
+   - *Clocked* :: Save to the currently clocked item in org-mode.
+   - *Journal* :: Add to your daily journal.
+   - *Elfeed* :: Capture from Elfeed entries.
+4. Click a button to generate the summary and send it to Emacs via org-protocol.
+   The summary is editable before sending — you can review and modify it in the
+   popup textarea.
+5. The summary is cached per URL, so revisiting a page won't re-trigger API calls.
+
+** Right-Click Context Menu
+You can also trigger summarization via the right-click context menu — useful for
+links and selected text:
+
+- Right-click on a *link* :: "GPT2Org: Capture this link" — extracts and
+  summarizes the linked page.
+- Right-click on *selected text* :: "GPT2Org: Capture selected text" — summarizes
+  the selected text directly.
+- Right-click on a *page* :: "GPT2Org: Capture this page" — summarizes the
+  current page.
+
+** Thinking Mode (DeepSeek)
 The extension supports DeepSeek's [[https://api-docs.deepseek.com/guides/thinking_mode][thinking mode]] via the ~thinking~ and
 ~reasoning_effort~ API parameters.
 
@@ -38,6 +77,11 @@ The extension supports DeepSeek's [[https://api-docs.deepseek.com/guides/thinkin
   which enables DeepSeek's extended thinking/reasoning capability for more
   thorough analysis. The summarized results with and without thinking mode are
   cached separately.
+
+** Supported Models
+The default model is DeepSeek's ~deepseek-v4-pro~. The extension supports
+DeepSeek, OpenAI, and Kimi (Moonshot) APIs. You can configure API keys and model
+names in the extension's options page.
 
 Utilizing the OpenAI API, one can efficiently extract a succinct summary from a
 webpage by providing the necessary prompt and API key. This API facilitates the
