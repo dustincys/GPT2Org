@@ -56,27 +56,16 @@ names in the extension's options page.
 5. The summary is cached per URL, so revisiting a page won't re-trigger API calls.
 
 ** Right-Click Context Menu
-You can also trigger summarization via the right-click context menu — useful for
-links and selected text:
+You can also trigger summarization from the right-click context menu — especially handy for links and selected text:
 
-- Right-click on a *link* :: "GPT2Org: Capture this link" — extracts and
-  summarizes the linked page.
-- Right-click on *selected text* :: "GPT2Org: Capture selected text" — summarizes
-  the selected text directly.
-- Right-click on a *page* :: "GPT2Org: Capture this page" — summarizes the
-  current page.
-
-** Thinking Mode (DeepSeek)
-The extension supports DeepSeek's [[https://api-docs.deepseek.com/guides/thinking_mode][thinking mode]] via the ~thinking~ and
-~reasoning_effort~ API parameters.
-
-- *Left-click* the toolbar button :: Normal mode — sends a standard request
-  without thinking parameters.
-- *Middle-click* the toolbar button :: Thinking mode enabled — the request
-  includes ~"thinking": {"type": "enabled"}~ and ~"reasoning_effort": "high"~,
-  which enables DeepSeek's extended thinking/reasoning capability for more
-  thorough analysis. The summarized results with and without thinking mode are
-  cached separately.
+- GPT2Org-org-protocol :: Capture the current page URL or selected text and send
+  it to Emacs via Org Protocol.
+- GPT2Org-org-journal :: Capture the current page URL or selected text and send
+  it to your Emacs journal via Org Protocol.
+- GPT2Org-clock-in :: Capture the current page URL or selected text and clock it
+  into Emacs via Org Protocol.
+- Thinking Mode (DeepSeek) :: The extension supports DeepSeek's thinking mode
+  using the thinking and reasoning_effort API parameters.
 
 ** Supported Models
 The default model is DeepSeek's ~deepseek-v4-pro~. The extension supports
